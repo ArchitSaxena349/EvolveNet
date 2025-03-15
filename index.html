@@ -274,10 +274,252 @@ console.log("User logged in successfully");
 console.log("User logged out successfully");console.log("Header loaded successfully");
 console.log("Footer loaded successfully");
 console.log("Registration button clicked");
-console.log("Survey button clicked");
+console.log("Survey button clicked");```html
+<!-- Improved Code -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evolve Net</title>
+  <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,">
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;700;900&family=Noto+Sans:wght@400;500;700;900&display=swap" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
+    .neomorph {
+      border-radius: 21px;
+      background: #ffffff;
+      box-shadow: 5px 5px 15px #e6e6e6, -5px -5px 15px #ffffff;
+    }
+  </style>
+</head>
+<body>
+  <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Epilogue, "Noto Sans", sans-serif;'>
+    <div class="layout-container flex h-full grow flex-col">
+      <header class="hidden lg:flex bg-black items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f0f2f5] px-10 py-3">
+        <div class="flex items-center gap-4 text-[#111518]">
+          <img class="w-60" src="logo/logo-black.png" alt="" srcset="">
+        </div>
+        <div class="flex flex-1 justify-end gap-8">
+          <div class="flex items-center gap-9">
+            <a class="text-white text-sm font-medium leading-normal" href="index.html">Home</a>
+            <a class="text-white text-sm font-medium leading-normal" href="event.html">Events</a>
+            <a class="text-white text-sm font-medium leading-normal" href="jobportal.html">Job Portal</a>
+            <a class="text-white text-sm font-medium leading-normal" href="Networkinghub.html">Networking</a>
+            <a class="text-white text-sm font-medium leading-normal" href="feedback-survey.html">Feedback</a>
+          </div>
+          <div class="flex gap-2">
+            <button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 bg-[#f0f2f5] text-[#111518] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5">
+              <div class="text-[#111518]" data-icon="MagnifyingGlass" data-size="20px" data-weight="regular">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                  <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
+                </svg>
+              </div>
+            </button>
+            <a href="login.html">
+              <button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 bg-[#f0f2f5] text-[#111518] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5">
+                <div class="text-[#111518]" data-icon="User" data-size="20px" data-weight="regular">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                    <path d="M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z"></path>
+                  </svg>
+                </div>
+              </button>
+            </a>
+          </div>
+        </div>
+      </header>
+      <!-- mobile header -->
+      <div class="lg:hidden">
+        <!-- header menu btm starts -->
+        <div class="bg-black grid grid-cols-2">
+          <div>
+            <a href="index.php">
+              <img src="logo/logo-black.png" class="w-56 text-white p-6" alt="" srcset="">
+            </a>
+          </div>
+          <div>
+            <i class="absolute text-white right-10 top-10 fa fa-bars text-2xl mobile-menu-button z-10"></i>
+          </div>
+        </div>
+        <!-- header menu btn ends-->
+        <div class="container right-0 top-0 z-10 bg-black h-screen hidden mobile-menu w-10/12" style="position:fixed; overflow-y: scroll;">
+          <div class="flex pl-10 mb-20">
+            <img src="logo/logo-black.png" class="w-7/12 mt-5" alt="">
+            <i class="fa fa-times text-white mt-10 right-10 absolute text-xl hover:text-red-500 mobile-menu-close-btn"></i>
+          </div>
+          <div class="mb-10 w-11/12 pl-6">
+            <nav class="text-white w-11/12 ">
+              <ul class="divide-y divide-gray-600">
+                <a href="index.php">
+                  <li class="py-3 hover:text-yellow-300 text-lg font-semibold"> Home</li>
+                </a>
+                <a href="about.php">
+                  <li class="py-3 hover:text-yellow-300 text-lg font-semibold">About</li>
+                </a>
+                <a href="services.php">
+                  <li class="py-3 hover:text-yellow-300 text-lg font-semibold">Services</li>
+                </a>
+                <a href="contact.php">
+                  <li class="py-3 hover:text-yellow-300 text-lg font-semibold">Contact</li>
+                </a>
+              </ul>
+            </nav>
+          </div>
+          <div class="pl-6">
+            <ul>
+              <h1 class="text-yellow-300 font-bold mb-6">Contact Us</h1>
+              <li class="text-white font-semibold">
+                <i class="fa-solid fa-location-pin text-yellow-300 mb-4 mr-2"></i>
+                Location
+              </li>
+              <li class="text-white font-semibold">
+                <i class="fa-solid fa-phone text-yellow-300 mb-4 mr-2"></i>
+                +1 23344 67687
+              </li>
+              <li class="text-white font-semibold">
+                <i class="fa-solid fa-envelope text-yellow-300 mb-4 mr-2"></i>
+                support@admin.com
+              </li>
+            </ul>
+            <button class="inline-flex items-center text-white font-bold bg-[#5E17EB] border-0 py-3 px-12 focus:outline-none hover:bg-gray-700 rounded-xl text-base mt-4 md:mt-0">Let’s Talk 
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- mobile header ends -->
+      <!-- header ends -->
+      <div class="px-40 w-full flex flex-1 justify-center py-5">
+        <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+          <div class="@container">
+            <div class="@[480px]:p-4">
+              <div class="flex min-h-[480px] flex-col gap-6 bg-cover bg-center bg-no-repeat @[480px]:gap-8 @[480px]:rounded-xl items-center justify-center p-4" style='background-image: linear-gradient(rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%), url("https://cdn.usegalileo.ai/stability/c9c2227c-4dde-4ee0-b26a-4d0ce171d679.png");'>
+                <div
 console.log("User logged in successfully");
 console.log("User logged out successfully");          </button>
-            </div>
+            </div><!DOCTYPE html>
+<html lang="en<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evolve Net</title>
+  <link rel="icon" type="image/x-icon" href="data:image/x-icon;base64,">
+  <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;700;900&family=Noto+Sans:wght@400;500;700;900&display=swap" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
+    .neomorph {
+      border-radius: 21px;
+      background: #ffffff;
+      box-shadow: 5px 5px 15px #e6e6e6, -5px -5px 15px #ffffff;
+    }
+  </style>
+</head>
+<body>
+  <div class="relative flex size-full min-h-screen flex-col bg-slate-50 group/design-root overflow-x-hidden" style='font-family: Epilogue, "Noto Sans", sans-serif;'>
+    <div class="layout-container flex h-full grow flex-col">
+      <header class="hidden lg:flex bg-black items-center justify-between whitespace-nowrap border-b border-solid border-b-[#f0f2f5] px-10 py-3">
+        <div class="flex items-center gap-4 text-[#111518]">
+          <img class="w-60" src="logo/logo-black.png" alt="" srcset="">
+        </div>
+        <div class="flex flex-1 justify-end gap-8">
+          <div class="flex items-center gap-9">
+            <a class="text-white text-sm font-medium leading-normal" href="index.html">Home</a>
+            <a class="text-white text-sm font-medium leading-normal" href="event.html">Events</a>
+            <a class="text-white text-sm font-medium leading-normal" href="jobportal.html">Job Portal</a>
+            <a class="text-white text-sm font-medium leading-normal" href="Networkinghub.html">Networking</a>
+            <a class="text-white text-sm font-medium leading-normal" href="feedback-survey.html">Feedback</a>
+          </div>
+          <div class="flex gap-2">
+            <button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 bg-[#f0f2f5] text-[#111518] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5">
+              <div class="text-[#111518]" data-icon="MagnifyingGlass" data-size="20px" data-weight="regular">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                  <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
+                </svg>
+              </div>
+            </button>
+            <a href="login.html">
+              <button class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-10 bg-[#f0f2f5] text-[#111518] gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5">
+                <div class="text-[#111518]" data-icon="User" data-size="20px" data-weight="regular">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+                    <path d="M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z"></path>
+                  </svg>
+                </div>
+              </button>
+            </a>
+          </div>
+        </div>
+      </header>
+      <!-- mobile header -->
+      <div class="lg:hidden">
+        <!-- header menu btm starts -->
+        <div class="bg-black grid grid-cols-2">
+          <div>
+            <a href="index.php">
+              <img src="logo/logo-black.png" class="w-56 text-white p-6" alt="" srcset="">
+            </a>
+          </div>
+          <div>
+            <i class="absolute text-white right-10 top-10 fa fa-bars text-2xl mobile-menu-button z-10"></i>
+          </div>
+        </div>
+        <!-- header menu btn ends-->
+        <div class="container right-0 top-0 z-10 bg-black h-screen hidden mobile-menu w-10/12" style="position:fixed; overflow-y: scroll;">
+          <div class="flex pl-10 mb-20">
+            <img src="logo/logo-black.png" class="w-7/12 mt-5" alt="">
+            <i class="fa fa-times text-white mt-10 right-10 absolute text-xl hover:text-red-500 mobile-menu-close-btn"></i>
+          </div>
+          <div class="mb-10 w-11/12 pl-6">
+            <nav class="text-white w-11/12 ">
+              <ul class="divide-y divide-gray-600">
+                <a href="index.php">
+                  <li class="py-3 hover:text-yellow-300 text-lg font-semibold"> Home</li>
+                </a>
+                <a href="about.php">
+                  <li class="py-3 hover:text-yellow-300 text-lg font-semibold">About</li>
+                </a>
+                <a href="services.php">
+                  <li class="py-3 hover:text-yellow-300 text-lg font-semibold">Services</li>
+                </a>
+                <a href="contact.php">
+                  <li class="py-3 hover:text-yellow-300 text-lg font-semibold">Contact</li>
+                </a>
+              </ul>
+            </nav>
+          </div>
+          <div class="pl-6">
+            <ul>
+              <h1 class="text-yellow-300 font-bold mb-6">Contact Us</h1>
+              <li class="text-white font-semibold">
+                <i class="fa-solid fa-location-pin text-yellow-300 mb-4 mr-2"></i>
+                Location
+              </li>
+              <li class="text-white font-semibold">
+                <i class="fa-solid fa-phone text-yellow-300 mb-4 mr-2"></i>
+                +1 23344 67687
+              </li>
+              <li class="text-white font-semibold">
+                <i class="fa-solid fa-envelope text-yellow-300 mb-4 mr-2"></i>
+                support@admin.com
+              </li>
+            </ul>
+            <button class="inline-flex items-center text-white font-bold bg-[#5E17EB] border-0 py-3 px-12 focus:outline-none hover:bg-gray-700 rounded-xl text-base mt-4 md:mt-0">Let’s Talk 
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- mobile header ends -->
+      <!-- header ends -->
+      <div class="px-40 w-full flex flex-1 justify-center py-5">
+        <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
+          <div class="@container">
+            <div class="@[480px]:p-4">
+              <div class="flex min-h-[480px] flex-col gap-6 bg-cover bg-center bg-no-repeat @[480px]:gap-8 @[480px]:rounded-xl items-center justify-center p-4" style='background-image: linear-gradient(rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.4) 100%), url("https://cdn.usegalileo.ai/stability/c9c2227c-4dde-4ee0-b26a-4d0ce171d679.png");'>
+                <div class="flex flex-col gap-
+                <div class="flex flex-col gap-
           </div>
         </div>
         <footer class="flex justify-center">
