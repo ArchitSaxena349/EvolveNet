@@ -1,26 +1,52 @@
 const express = require('express');
 const router = express.Router();
-const { protect, authorize } = require('../middleware/auth');
-const {
-  getUsers,
-  getUser,
-  updateUser,
-  deleteUser,
-  updateProfile,
-  getConnections,
-  getNotifications,
-  markNotificationAsRead
-} = require('../controllers/userController');
+const { check } = require('express-validator');
+const userController = require('../controllers/userController');
+const auth = require('../middleware/auth');
 
-router.use(protect);
+// @route   GET /api/users
+// @desc    Get all users
+// @access  Private/Admin
+router.get('/', auth, userController.getUsers);
 
-router.get('/', authorize('admin'), getUsers);
-router.get('/:id', getUser);
-router.put('/:id', updateUser);
-router.delete('/:id', authorize('admin'), deleteUser);
-router.put('/profile', updateProfile);
-router.get('/connections', getConnections);
-router.get('/notifications', getNotifications);
-router.put('/notifications/:id', markNotificationAsRead);
+// @route   GET /api/users/:id
+// @desc    Get user by ID
+// @access  Private/Admin
+router.get('/:id', auth, userController.getUserById);
+
+// @route   PUT /api/users/:id
+// @desc    Update user
+// @access  Private/Admin
+router.put(
+  '/:id',
+  [
+    auth,
+    [
+      check('name', 'Name is required').not().isEmpty(),
+      check('email', 'Please include a valid email').isEmail()
+    ]
+  ],
+  userController.updateUser
+);
+
+// @route   DELETE /api/users/:id
+// @desc    Delete user
+// @access  Private/Admin
+router.delete('/:id', auth, userController.deleteUser);
+
+// @route   PUT /api/users/profile
+// @desc    Update user profile
+// @access  Private
+router.put(
+  '/profile',
+  [
+    auth,
+    [
+      check('name', 'Name is required').not().isEmpty(),
+      check('email', 'Please include a valid email').isEmail()
+    ]
+  ],
+  userController.updateProfile
+);
 
 module.exports = router; 
