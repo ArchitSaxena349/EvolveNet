@@ -1,38 +1,70 @@
 const express = require('express');
 const router = express.Router();
-const { protect } = require('../middleware/auth');
-const {
-  createEvent,
-  getEvents,
-  getEvent,
-  updateEvent,
-  deleteEvent,
-  registerForEvent,
-  cancelRegistration,
-  addSpeaker,
-  removeSpeaker,
-  getEventAttendees,
-  getEventSpeakers,
-  addEventFeedback,
-  getEventFeedback
-} = require('../controllers/eventController');
+const { check } = require('express-validator');
+const eventController = require('../controllers/eventController');
+const auth = require('../middleware/auth');
 
-// Public routes
-router.get('/', getEvents);
-router.get('/:id', getEvent);
-router.get('/:id/attendees', getEventAttendees);
-router.get('/:id/speakers', getEventSpeakers);
-router.get('/:id/feedback', getEventFeedback);
+// @route   GET /api/events
+// @desc    Get all events
+// @access  Public
+router.get('/', eventController.getEvents);
 
-// Protected routes
-router.use(protect);
-router.post('/', createEvent);
-router.put('/:id', updateEvent);
-router.delete('/:id', deleteEvent);
-router.post('/:id/register', registerForEvent);
-router.post('/:id/cancel', cancelRegistration);
-router.post('/:id/speakers', addSpeaker);
-router.delete('/:id/speakers/:speakerId', removeSpeaker);
-router.post('/:id/feedback', addEventFeedback);
+// @route   GET /api/events/:id
+// @desc    Get event by ID
+// @access  Public
+router.get('/:id', eventController.getEventById);
+
+// @route   POST /api/events
+// @desc    Create event
+// @access  Private
+router.post(
+  '/',
+  [
+    auth,
+    [
+      check('title', 'Title is required').not().isEmpty(),
+      check('description', 'Description is required').not().isEmpty(),
+      check('date', 'Date is required').not().isEmpty(),
+      check('location', 'Location is required').not().isEmpty(),
+      check('maxAttendees', 'Maximum attendees is required').isInt({ min: 1 }),
+      check('tags', 'Tags are required').not().isEmpty()
+    ]
+  ],
+  eventController.createEvent
+);
+
+// @route   PUT /api/events/:id
+// @desc    Update event
+// @access  Private
+router.put(
+  '/:id',
+  [
+    auth,
+    [
+      check('title', 'Title is required').not().isEmpty(),
+      check('description', 'Description is required').not().isEmpty(),
+      check('date', 'Date is required').not().isEmpty(),
+      check('location', 'Location is required').not().isEmpty(),
+      check('maxAttendees', 'Maximum attendees is required').isInt({ min: 1 }),
+      check('tags', 'Tags are required').not().isEmpty()
+    ]
+  ],
+  eventController.updateEvent
+);
+
+// @route   DELETE /api/events/:id
+// @desc    Delete event
+// @access  Private
+router.delete('/:id', auth, eventController.deleteEvent);
+
+// @route   POST /api/events/:id/register
+// @desc    Register for event
+// @access  Private
+router.post('/:id/register', auth, eventController.registerForEvent);
+
+// @route   DELETE /api/events/:id/register
+// @desc    Unregister from event
+// @access  Private
+router.delete('/:id/register', auth, eventController.unregisterFromEvent);
 
 module.exports = router; 
