@@ -9,7 +9,7 @@ const rateLimit = require('express-rate-limit');
 const morgan = require('morgan');
 
 // Load environment variables
-dotenv.config();
+dotenv.config({ path: path.join(__dirname, '.env') });
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -29,7 +29,9 @@ app.use(cors());
 app.use(compression());
 
 // Request logging
-app.use(morgan('dev'));
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
 
 // Rate limiting
 const limiter = rateLimit({
@@ -43,15 +45,20 @@ app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/evolvenet', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-.then(() => console.log('MongoDB Connected'))
-.catch(err => {
-  console.error('MongoDB Connection Error:', err);
-  process.exit(1);
-});
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    });
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    process.exit(1);
+  }
+};
+
+connectDB();
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -63,7 +70,7 @@ app.use('/api/groups', groupRoutes);
 // Serve static assets in production
 if (process.env.NODE_ENV === 'production') {
   // Set static folder
-  app.use(express.static('../client/build'));
+  app.use(express.static(path.join(__dirname, '../client/build')));
 
   app.get('*', (req, res) => {
     res.sendFile(path.resolve(__dirname, '../client', 'build', 'index.html'));
