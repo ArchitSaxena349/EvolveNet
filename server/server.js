@@ -70,21 +70,15 @@ const connectDB = async () => {
       useUnifiedTopology: true,
       serverSelectionTimeoutMS: 5000,
       retryWrites: true,
-      w: 'majority',
-      maxPoolSize: 10,
-      minPoolSize: 5
+      w: 'majority'
     });
     console.log(`MongoDB Connected: ${conn.connection.host}`);
+    return true;
   } catch (error) {
     console.error('MongoDB connection error:', error);
-    // Don't exit the process, let the server continue running
-    // This allows the server to retry the connection
-    console.log('Retrying MongoDB connection in 5 seconds...');
-    setTimeout(connectDB, 5000);
+    return false;
   }
 };
-
-connectDB();
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -118,10 +112,20 @@ app.use((req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 10000;
+// Start server
+const startServer = async () => {
+  const PORT = process.env.PORT || 10000;
+  
+  // Try to connect to MongoDB first
+  const isConnected = await connectDB();
+  if (!isConnected) {
+    console.log('Failed to connect to MongoDB. Server will start but database operations will fail.');
+  }
 
-app.listen(PORT, () => {
-  console.log(`Server started on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV}`);
-  connectDB();
-}); 
+  app.listen(PORT, () => {
+    console.log(`Server started on port ${PORT}`);
+    console.log(`Environment: ${process.env.NODE_ENV}`);
+  });
+};
+
+startServer(); 
