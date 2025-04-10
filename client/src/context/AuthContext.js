@@ -1,16 +1,18 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 
-// Set the base URL for API requests
-axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'https://evolvenet-api.onrender.com';
+const AuthContext = createContext();
 
-export const AuthContext = createContext();
+export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [authError, setAuthError] = useState(null);
+  const [error, setError] = useState(null);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
+
+  // Set axios default base URL
+  axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'https://evolvenet.onrender.com';
 
   // Set default axios headers
   axios.defaults.headers.common['Authorization'] = localStorage.getItem('accessToken');
@@ -47,7 +49,7 @@ export const AuthProvider = ({ children }) => {
         }
       } catch (err) {
         console.error('Auth error:', err);
-        setAuthError('Authentication error');
+        setError('Authentication error');
         logout();
       } finally {
         setLoading(false);
@@ -59,7 +61,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     setIsAuthenticating(true);
-    setAuthError(null);
+    setError(null);
     try {
       const res = await axios.post('/api/auth/login', { email, password });
       localStorage.setItem('accessToken', res.data.accessToken);
@@ -69,7 +71,7 @@ export const AuthProvider = ({ children }) => {
       return { success: true };
     } catch (err) {
       const errorMessage = err.response?.data?.error || 'Login failed';
-      setAuthError(errorMessage);
+      setError(errorMessage);
       return { success: false, error: errorMessage };
     } finally {
       setIsAuthenticating(false);
@@ -78,7 +80,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (formData) => {
     setIsAuthenticating(true);
-    setAuthError(null);
+    setError(null);
     try {
       const res = await axios.post('/api/auth/register', formData);
       localStorage.setItem('accessToken', res.data.accessToken);
@@ -88,7 +90,7 @@ export const AuthProvider = ({ children }) => {
       return { success: true };
     } catch (err) {
       const errorMessage = err.response?.data?.error || 'Registration failed';
-      setAuthError(errorMessage);
+      setError(errorMessage);
       return { success: false, error: errorMessage };
     } finally {
       setIsAuthenticating(false);
@@ -100,11 +102,11 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('refreshToken');
     delete axios.defaults.headers.common['Authorization'];
     setUser(null);
-    setAuthError(null);
+    setError(null);
   };
 
   const clearError = () => {
-    setAuthError(null);
+    setError(null);
   };
 
   return (
@@ -112,7 +114,7 @@ export const AuthProvider = ({ children }) => {
       value={{ 
         user, 
         loading, 
-        authError,
+        error,
         isAuthenticating,
         login, 
         register, 
