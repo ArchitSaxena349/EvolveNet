@@ -73,10 +73,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/yourusername/evolve-net.git"
+    "url": "git+https://github.com/ArchitSaxena349/EvolveNet.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/evolve-net/issues"
+    "url": "https://github.com/ArchitSaxena349/EvolveNet/issues"
   },
-  "homepage": "https://github.com/yourusername/evolve-net#readme"
+  "homepage": "https://github.com/ArchitSaxena349/EvolveNet#readme"
 }
