@@ -1,155 +1,55 @@
 const express = require('express');
 const router = express.Router();
-const { protect } = require('../middleware/auth');
-const rateLimit = require('express-rate-limit');
-const { body, validationResult } = require('express-validator');
-const {
-  register,
-  login,
-  getMe,
-  forgotPassword,
-  resetPassword,
-  verifyEmail,
-  refreshToken
-} = require('../controllers/authController');
-const User = require('../models/User');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const { check } = require('express-validator');
+const authController = require('../controllers/authController');
+const auth = require('../middleware/auth');
 
-// Rate limiting for auth routes
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5 // limit each IP to 5 requests per windowMs
-});
+// @route   POST /api/auth/register
+// @desc    Register user
+// @access  Public
+router.post(
+  '/register',
+  [
+    check('name', 'Name is required').not().isEmpty(),
+    check('email', 'Please include a valid email').isEmail(),
+    check('password', 'Please enter a password with 6 or more characters').isLength({ min: 6 })
+  ],
+  authController.register
+);
 
-// Input validation middleware
-const validateRegister = [
-  body('name').trim().notEmpty().withMessage('Name is required'),
-  body('email').isEmail().withMessage('Please provide a valid email'),
-  body('password')
-    .isLength({ min: 8 })
-    .withMessage('Password must be at least 8 characters long')
-    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)
-    .withMessage('Password must contain at least one uppercase letter, one lowercase letter, one number and one special character')
-];
+// @route   POST /api/auth/login
+// @desc    Login user
+// @access  Public
+router.post(
+  '/login',
+  [
+    check('email', 'Please include a valid email').isEmail(),
+    check('password', 'Password is required').exists()
+  ],
+  authController.login
+);
 
-const validateLogin = [
-  body('email').isEmail().withMessage('Please provide a valid email'),
-  body('password').notEmpty().withMessage('Password is required')
-];
+// @route   GET /api/auth/me
+// @desc    Get current user
+// @access  Private
+router.get('/me', auth, authController.getMe);
 
-// Register a new user
-router.post('/register', validateRegister, async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
+// @route   POST /api/auth/forgotpassword
+// @desc    Forgot password
+// @access  Public
+router.post(
+  '/forgotpassword',
+  [check('email', 'Please include a valid email').isEmail()],
+  authController.forgotPassword
+);
 
-    const { name, email, password } = req.body;
-
-    // Check if user already exists
-    let user = await User.findOne({ email });
-    if (user) {
-      return res.status(400).json({ message: 'User already exists' });
-    }
-
-    // Create new user
-    user = new User({
-      name,
-      email,
-      password
-    });
-
-    // Save user
-    await user.save();
-
-    // Create tokens
-    const accessToken = jwt.sign(
-      { userId: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: '15m' }
-    );
-
-    const refreshToken = jwt.sign(
-      { userId: user._id },
-      process.env.JWT_REFRESH_SECRET,
-      { expiresIn: '7d' }
-    );
-
-    // Send verification email
-    await sendVerificationEmail(user.email, user._id);
-
-    res.status(201).json({
-      accessToken,
-      refreshToken,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        isVerified: false
-      }
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-// Login user
-router.post('/login', authLimiter, validateLogin, async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    const { email, password } = req.body;
-
-    // Check if user exists
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ message: 'Invalid credentials' });
-    }
-
-    // Check password
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid credentials' });
-    }
-
-    // Create tokens
-    const accessToken = jwt.sign(
-      { userId: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: '15m' }
-    );
-
-    const refreshToken = jwt.sign(
-      { userId: user._id },
-      process.env.JWT_REFRESH_SECRET,
-      { expiresIn: '7d' }
-    );
-
-    res.json({
-      accessToken,
-      refreshToken,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        isVerified: user.isVerified
-      }
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-// Protected routes
-router.get('/me', protect, getMe);
-router.post('/refresh-token', refreshToken);
-router.get('/verify-email/:token', verifyEmail);
-router.post('/forgotpassword', authLimiter, forgotPassword);
-router.put('/resetpassword/:resettoken', authLimiter, resetPassword);
+// @route   PUT /api/auth/resetpassword/:resettoken
+// @desc    Reset password
+// @access  Public
+router.put(
+  '/resetpassword/:resettoken',
+  [check('password', 'Please enter a password with 6 or more characters').isLength({ min: 6 })],
+  authController.resetPassword
+);
 
 module.exports = router; 
