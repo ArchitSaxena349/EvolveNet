@@ -21,9 +21,20 @@ const groupRoutes = require('./routes/groups');
 // Initialize express
 const app = express();
 
+// CORS configuration
+const corsOptions = {
+  origin: [
+    'https://evolve-net-hzuf.vercel.app',
+    'http://localhost:3000'
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+};
+
 // Security middleware
 app.use(helmet());
-app.use(cors());
+app.use(cors(corsOptions));
 
 // Performance middleware
 app.use(compression());
