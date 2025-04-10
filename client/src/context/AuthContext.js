@@ -1,6 +1,9 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
+// Set the base URL for API requests
+axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'https://evolvenet-api.onrender.com';
+
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
