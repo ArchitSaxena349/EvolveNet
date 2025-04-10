@@ -25,33 +25,33 @@ const groupRoutes = require('./routes/groups');
 // Initialize express
 const app = express();
 
-// CORS configuration
-const corsOptions = {
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cors({
   origin: [
     'https://evolve-net-hzuf.vercel.app',
     'http://localhost:3000'
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-};
-
-// Security middleware
-app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" }
+  credentials: true,
+  exposedHeaders: ['Authorization']
 }));
-app.use(cors(corsOptions));
-app.use(mongoSanitize());
-app.use(xss());
-app.use(hpp());
-
-// Performance middleware
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'", "https://evolvenet-api.onrender.com"]
+    }
+  }
+}));
 app.use(compression());
-
-// Request logging
-if (process.env.NODE_ENV === 'development') {
-  app.use(morgan('dev'));
-}
+app.use(morgan('dev'));
 
 // Rate limiting
 const limiter = rateLimit({
