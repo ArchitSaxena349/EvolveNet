@@ -67,17 +67,27 @@ app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 // Connect to MongoDB
 const connectDB = async () => {
   try {
+    console.log('Attempting to connect to MongoDB...');
+    console.log('Connection string:', process.env.MONGODB_URI);
+    
     const conn = await mongoose.connect(process.env.MONGODB_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 10000,
       retryWrites: true,
       w: 'majority'
     });
+    
     console.log(`MongoDB Connected: ${conn.connection.host}`);
     return true;
   } catch (error) {
     console.error('MongoDB connection error:', error);
+    console.error('Error details:', {
+      name: error.name,
+      message: error.message,
+      code: error.code,
+      reason: error.reason
+    });
     return false;
   }
 };
