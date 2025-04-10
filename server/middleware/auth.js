@@ -2,6 +2,48 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Token = require('../models/Token');
 
+const auth = async (req, res, next) => {
+  try {
+    // Get token from header
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+
+    if (!token) {
+      return res.status(401).json({ error: 'No token, authorization denied' });
+    }
+
+    try {
+      // Verify token
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+      // Check if user exists
+      const user = await User.findById(decoded.id);
+      if (!user) {
+        return res.status(401).json({ error: 'Token is not valid' });
+      }
+
+      // Check if token is in blacklist
+      const blacklistedToken = await Token.findOne({
+        user: user._id,
+        token,
+        blacklisted: true
+      });
+
+      if (blacklistedToken) {
+        return res.status(401).json({ error: 'Token has been invalidated' });
+      }
+
+      // Add user to request object
+      req.user = user;
+      next();
+    } catch (err) {
+      res.status(401).json({ error: 'Token is not valid' });
+    }
+  } catch (err) {
+    console.error('Auth middleware error:', err.message);
+    res.status(500).json({ error: 'Server Error' });
+  }
+};
+
 const protect = async (req, res, next) => {
   try {
     let token;
@@ -156,4 +198,4 @@ const authorize = (...roles) => {
   };
 };
 
-module.exports = { protect, authorize, refreshToken }; 
+module.exports = auth; 
