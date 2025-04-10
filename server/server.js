@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -7,6 +8,9 @@ const helmet = require('helmet');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 const morgan = require('morgan');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
+const hpp = require('hpp');
 
 // Load environment variables
 dotenv.config({ path: path.join(__dirname, '.env') });
@@ -23,10 +27,9 @@ const app = express();
 
 // CORS configuration
 const corsOptions = {
-  origin: [
-    'https://evolve-net-hzuf.vercel.app',
-    'http://localhost:3000'
-  ],
+  origin: process.env.NODE_ENV === 'production' 
+    ? ['https://evolve-net-hzuf.vercel.app']
+    : ['http://localhost:3000'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
@@ -35,6 +38,9 @@ const corsOptions = {
 // Security middleware
 app.use(helmet());
 app.use(cors(corsOptions));
+app.use(mongoSanitize());
+app.use(xss());
+app.use(hpp());
 
 // Performance middleware
 app.use(compression());
@@ -60,11 +66,13 @@ const connectDB = async () => {
   try {
     const conn = await mongoose.connect(process.env.MONGODB_URI, {
       useNewUrlParser: true,
-      useUnifiedTopology: true
+      useUnifiedTopology: true,
+      useCreateIndex: true,
+      useFindAndModify: false
     });
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
-    console.error(`Error: ${error.message}`);
+    console.error('MongoDB connection error:', error);
     process.exit(1);
   }
 };
