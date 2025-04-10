@@ -126,6 +126,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Contact
 
-Your Name - architsaxena349@gmail.com
-
 Project Link: [https://github.com/ArchitSaxena349/EvolveNet](https://github.com/ArchitSaxena349/EvolveNet) 
