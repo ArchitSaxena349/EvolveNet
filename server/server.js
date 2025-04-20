@@ -68,7 +68,7 @@ const connectDB = async () => {
   try {
     console.log('Attempting to connect to MongoDB...');
     
-    const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://architsaxena349:<db_password>@evolvenet.gf3ijvv.mongodb.net/evolvenet?retryWrites=true&w=majority&appName=EvolveNet', {
+    const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://architsaxena349:<Archit01>@evolvenet.gf3ijvv.mongodb.net/evolvenet?retryWrites=true&w=majority&appName=EvolveNet', {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       serverSelectionTimeoutMS: 10000
