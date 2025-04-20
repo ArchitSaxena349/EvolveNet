@@ -11,7 +11,8 @@ export const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   // Set axios defaults
-  axios.defaults.baseURL = process.env.REACT_APP_API_URL || 'https://evolvenet-api.onrender.com';
+  const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+  axios.defaults.baseURL = apiUrl;
   axios.defaults.withCredentials = true;
 
   useEffect(() => {
@@ -87,4 +88,4 @@ export const AuthProvider = ({ children }) => {
       {!loading && children}
     </AuthContext.Provider>
   );
-}; 
+};
