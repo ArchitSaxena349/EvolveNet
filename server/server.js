@@ -1,42 +1,41 @@
-require('dotenv').config();
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const path = require('path');
-const dotenv = require('dotenv');
-const helmet = require('helmet');
-const compression = require('compression');
-const rateLimit = require('express-rate-limit');
-const morgan = require('morgan');
-const mongoSanitize = require('express-mongo-sanitize');
-const xss = require('xss-clean');
-const hpp = require('hpp');
+// EvolveNet - Repaired Server Code
 
-// Load environment variables
+const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+const morgan = require('morgan');
+const rateLimit = require('express-rate-limit');
+const xss = require('xss-clean');
+const mongoSanitize = require('express-mongo-sanitize');
+const path = require('path');
+
+// Load Environment Variables
 dotenv.config({ path: path.join(__dirname, '.env') });
 
 // Import routes
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
 const eventRoutes = require('./routes/events');
-const connectionRoutes = require('./routes/connections');
 const groupRoutes = require('./routes/groups');
+const connectionRoutes = require('./routes/connections');
 
-// Initialize express
+// Initialize App
 const app = express();
 
-// Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Security Middlewares
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://evolve-net-hzuf.vercel.app']
-    : ['http://localhost:3000'],
+  origin: [
+    'https://evolve-net-hzuf.vercel.app',
+    'http://localhost:3000'
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
   exposedHeaders: ['Authorization']
 }));
+
 app.use(helmet({
   crossOriginResourcePolicy: { policy: "cross-origin" },
   contentSecurityPolicy: {
@@ -49,35 +48,54 @@ app.use(helmet({
     }
   }
 }));
-app.use(compression());
+
+app.use(xss());
+app.use(mongoSanitize());
+
+// Logger
 app.use(morgan('dev'));
 
-// Rate limiting
+// Body Parsing
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Rate Limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
+  max: 100, // Limit each IP
 });
 app.use(limiter);
 
-// Body parsing middleware
-app.use(express.json({ limit: '10kb' }));
-app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/events', eventRoutes);
+app.use('/api/groups', groupRoutes);
+app.use('/api/connections', connectionRoutes);
 
-// Connect to MongoDB
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'ok',
+    mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
+  });
+});
+
+// MongoDB Connection
 const connectDB = async () => {
   try {
     console.log('Attempting to connect to MongoDB...');
-    
-    const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://architsaxena349:<Archit01>@evolvenet.gf3ijvv.mongodb.net/evolvenet?retryWrites=true&w=majority&appName=EvolveNet', {
+    const conn = await mongoose.connect(process.env.MONGODB_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 10000
+      serverSelectionTimeoutMS: 10000,
+      retryWrites: true,
+      w: 'majority'
     });
-    
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
+    console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
     return true;
   } catch (error) {
-    console.error('MongoDB connection error:', error);
+    console.error('❌ MongoDB connection error:', error);
     console.error('Error details:', {
       name: error.name,
       message: error.message,
@@ -88,22 +106,7 @@ const connectDB = async () => {
   }
 };
 
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/events', eventRoutes);
-app.use('/api/connections', connectionRoutes);
-app.use('/api/groups', groupRoutes);
-
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).json({ 
-    status: 'ok',
-    mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
-  });
-});
-
-// Error handling middleware
+// Error Handling
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ 
@@ -112,27 +115,19 @@ app.use((err, req, res, next) => {
   });
 });
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({
-    status: 'fail',
-    message: 'Route not found'
-  });
-});
-
-// Start server
+// Start Server
 const startServer = async () => {
-  const PORT = process.env.PORT || 10000;
+  const PORT = process.env.PORT || 5000;
   
   // Try to connect to MongoDB first
   const isConnected = await connectDB();
   if (!isConnected) {
-    console.log('Failed to connect to MongoDB. Server will start but database operations will fail.');
+    console.log('⚠️ Failed to connect to MongoDB. Server will start but database operations will fail.');
   }
 
   app.listen(PORT, () => {
-    console.log(`Server started on port ${PORT}`);
-    console.log(`Environment: ${process.env.NODE_ENV}`);
+    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
   });
 };
 

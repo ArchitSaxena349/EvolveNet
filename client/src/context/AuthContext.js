@@ -10,9 +10,37 @@ export const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   // Set axios defaults
-  const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+  const apiUrl = process.env.REACT_APP_API_URL || 'https://evolvenet-api.onrender.com';
   axios.defaults.baseURL = apiUrl;
   axios.defaults.withCredentials = true;
+
+  // Add response interceptor for token refresh
+  axios.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      const originalRequest = error.config;
+      if (error.response?.status === 401 && !originalRequest._retry) {
+        originalRequest._retry = true;
+        try {
+          const token = localStorage.getItem('token');
+          if (token) {
+            const response = await axios.post('/api/auth/refresh-token', { token });
+            const { newToken } = response.data;
+            localStorage.setItem('token', newToken);
+            axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+            originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
+            return axios(originalRequest);
+          }
+        } catch (refreshError) {
+          console.error('Token refresh failed:', refreshError);
+          localStorage.removeItem('token');
+          delete axios.defaults.headers.common['Authorization'];
+          setUser(null);
+        }
+      }
+      return Promise.reject(error);
+    }
+  );
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -71,6 +99,11 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token');
     delete axios.defaults.headers.common['Authorization'];
     setUser(null);
+    setError(null);
+  };
+
+  const clearError = () => {
+    setError(null);
   };
 
   const value = {
@@ -79,7 +112,8 @@ export const AuthProvider = ({ children }) => {
     error,
     login,
     register,
-    logout
+    logout,
+    clearError
   };
 
   return (
