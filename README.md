@@ -1,129 +1,158 @@
-# EvolveNet - Professional Networking Platform
 
-EvolveNet is a modern professional networking platform built with the MERN stack (MongoDB, Express.js, React.js, Node.js).
+---
 
-## Features
+# ⚡ EvolveNet
 
-- User Authentication (Register, Login, Password Reset)
-- Profile Management
-- Event Management
-- Professional Connections
-- Groups and Communities
-- Real-time Notifications
-- Email Verification
-- Secure API with JWT Authentication
+*A full-stack professional networking platform built with the MERN stack.*
 
-## Tech Stack
+---
 
-- **Frontend**: React.js, Context API, Axios
-- **Backend**: Node.js, Express.js
-- **Database**: MongoDB
-- **Authentication**: JWT, bcrypt
-- **Email**: Nodemailer
-- **Security**: Helmet, Rate Limiting, CORS
+## 🌐 Overview
 
-## Prerequisites
+**EvolveNet** is a modern, full-featured professional networking platform designed to empower users to:
 
-- Node.js (v14 or higher)
-- MongoDB
-- npm or yarn
+* Build and manage professional profiles
+* Connect with peers and industry experts
+* Join communities and interest groups
+* Create, promote, and attend professional events
 
-## Installation
+Built using the **MERN stack** (MongoDB, Express.js, React.js, Node.js), EvolveNet provides a seamless, secure, and scalable experience—ideal for anyone looking to expand their professional presence.
 
-1. Clone the repository:
+---
+
+## 🚀 Features
+
+### 👤 User Authentication
+
+* Secure sign-up and login flow using **JWT**
+* **Email verification** via **Nodemailer**
+* Refresh tokens for persistent sessions
+
+### 📝 Profile Management
+
+* Create, view, and edit detailed professional profiles
+
+### 🤝 Connections
+
+* Send and accept connection requests
+* View mutual connections and grow your network
+
+### 🌍 Communities
+
+* Create and join **groups** based on shared interests or industries
+* Foster discussion and collaboration with peers
+
+### 📅 Event Management
+
+* Organize and promote professional events
+* RSVP and view upcoming or past events
+
+---
+
+## 🛡️ Security Highlights
+
+EvolveNet is designed with strong security principles:
+
+* **JWT & Refresh Tokens** for secure session management
+* **Bcrypt** hashing for all passwords
+* **Rate Limiting** to prevent brute-force attacks
+* **CORS** properly configured
+* **Helmet.js** to set secure HTTP headers
+
+---
+
+## 🧱 Tech Stack
+
+### Frontend
+
+* React.js
+* Axios
+* React Router
+* Tailwind CSS (if you're using it—optional to list)
+
+### Backend
+
+* Node.js
+* Express.js
+* MongoDB (via Mongoose)
+
+### Libraries & Utilities
+
+* `bcrypt` – Password hashing
+* `jsonwebtoken` – JWT-based auth
+* `nodemailer` – Email verification
+* `helmet` – Secure HTTP headers
+* `cors` – Enable cross-origin requests
+* `dotenv` – Environment variable management
+
+---
+
+## ⚙️ Installation
+
+Clone the repo:
+
 ```bash
-git clone https://github.com/yourusername/evolvenet.git
-cd evolvenet
+git clone https://github.com/ArchitSaxena349/EvolveNet.git
+cd EvolveNet
 ```
 
-2. Install dependencies:
-```bash
-# Install server dependencies
-npm install
+Install backend and frontend dependencies:
 
-# Install client dependencies
-cd client
+```bash
 npm install
 ```
 
-3. Create a .env file in the root directory:
+Set up environment variables:
+
+Create a `.env` file in the root directory and define the following:
+
 ```env
-NODE_ENV=development
-PORT=5000
-MONGODB_URI=mongodb://localhost:27017/evolvenet
-JWT_SECRET=your-super-secret-jwt-key
-JWT_REFRESH_SECRET=your-super-secret-refresh-jwt-key
-JWT_EXPIRE=15m
-JWT_REFRESH_EXPIRE=7d
-EMAIL_SERVICE=gmail
-EMAIL_USERNAME=your-email@gmail.com
-EMAIL_PASSWORD=your-email-password
-EMAIL_FROM=your-email@gmail.com
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+JWT_REFRESH_SECRET=your_jwt_refresh_secret
+EMAIL_USER=your_email@example.com
+EMAIL_PASS=your_email_password_or_app_password
+CLIENT_URL=http://localhost:3000
 ```
 
-4. Start the development server:
+---
+
+## 🧪 Running the App
+
+### Development Mode (with Hot Reloading)
+
 ```bash
-# From the root directory
 npm run dev
 ```
 
-This will start both the backend server (port 5000) and frontend development server (port 3000).
+### Production Mode
 
-## Available Scripts
+```bash
+# Build the React client
+npm run build
 
-- `npm run dev` - Start both client and server in development mode
-- `npm run server` - Start only the server
-- `npm run client` - Start only the client
-- `npm run build` - Build the client for production
-- `npm test` - Run tests
-- `npm start` - Start the server in production mode
-
-## Project Structure
-
-```
-evolvenet/
-├── client/                 # React frontend
-│   ├── public/            # Static files
-│   ├── src/               # Source files
-│   │   ├── components/    # Reusable components
-│   │   ├── context/       # React context
-│   │   ├── pages/         # Page components
-│   │   └── App.js         # Main App component
-│   └── package.json       # Frontend dependencies
-├── server/                # Node.js/Express backend
-│   ├── config/           # Configuration files
-│   ├── controllers/      # Route controllers
-│   ├── middleware/       # Custom middleware
-│   ├── models/           # Mongoose models
-│   ├── routes/           # API routes
-│   ├── utils/            # Utility functions
-│   └── server.js         # Main server file
-└── package.json          # Root package.json
+# Start the backend server
+npm start
 ```
 
-## Security Features
+---
 
-- JWT Authentication with refresh tokens
-- Password hashing with bcrypt
-- Rate limiting
-- CORS protection
-- Helmet security headers
-- Input validation
-- Email verification
-- Password reset functionality
+## 📄 License
 
-## Contributing
+This project is licensed under the [MIT License](LICENSE).
+Feel free to use, fork, or contribute 🤝
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+---
 
-## License
+## 🤝 Contributing
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+Pull requests are welcome. For major changes, please open an issue first to discuss what you’d like to change.
+Let's build something impactful together!
 
-## Contact
+---
 
-Project Link: [https://github.com/ArchitSaxena349/EvolveNet](https://github.com/ArchitSaxena349/EvolveNet) 
+## 🙌 Acknowledgements
+
+Thanks to all open-source contributors and tools that made this project possible!
+
+---
