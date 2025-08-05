@@ -12,7 +12,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const path = require('path');
 
 // Load Environment Variables
-dotenv.config({ path: path.join(__dirname, '.env') });
+dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -66,6 +66,11 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
+// Serve static files from React build in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '..', 'client', 'build')));
+}
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
@@ -80,6 +85,13 @@ app.get('/health', (req, res) => {
     mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
   });
 });
+
+// Catch-all handler: send back React's index.html file in production
+if (process.env.NODE_ENV === 'production') {
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'client', 'build', 'index.html'));
+  });
+}
 
 // MongoDB Connection
 const connectDB = async () => {

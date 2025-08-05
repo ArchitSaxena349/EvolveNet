@@ -10,7 +10,8 @@ export const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   // Set axios defaults
-  const apiUrl = process.env.REACT_APP_API_URL || 'https://evolvenet-api.onrender.com';
+  const apiUrl = process.env.REACT_APP_API_URL || 
+    (process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : 'https://evolvenet-api.onrender.com');
   axios.defaults.baseURL = apiUrl;
   axios.defaults.withCredentials = true;
 

@@ -45,7 +45,13 @@ exports.register = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      token
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
     });
   } catch (err) {
     console.error(err);
@@ -95,7 +101,13 @@ exports.login = async (req, res) => {
     res.status(200).json({
       success: true,
       token,
-      refreshToken
+      refreshToken,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
     });
   } catch (err) {
     console.error(err);
@@ -110,8 +122,12 @@ exports.getMe = async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
     res.status(200).json({
-      success: true,
-      data: user
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      profile: user.profile,
+      createdAt: user.createdAt
     });
   } catch (err) {
     console.error(err);
@@ -156,6 +172,47 @@ exports.forgotPassword = async (req, res) => {
       await user.save({ validateBeforeSave: false });
       return res.status(500).json({ error: 'Email could not be sent' });
     }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+// @desc    Refresh JWT token
+// @route   POST /api/auth/refresh-token
+// @access  Public
+exports.refreshToken = async (req, res) => {
+  try {
+    const { token } = req.body;
+    
+    if (!token) {
+      return res.status(401).json({ error: 'No token provided' });
+    }
+
+    // Find the refresh token
+    const refreshTokenDoc = await Token.findOne({ refreshToken: token });
+    if (!refreshTokenDoc) {
+      return res.status(401).json({ error: 'Invalid refresh token' });
+    }
+
+    // Check if token is expired
+    if (refreshTokenDoc.expiresAt < new Date()) {
+      await Token.findByIdAndDelete(refreshTokenDoc._id);
+      return res.status(401).json({ error: 'Refresh token expired' });
+    }
+
+    // Get user and generate new token
+    const user = await User.findById(refreshTokenDoc.user);
+    if (!user) {
+      return res.status(401).json({ error: 'User not found' });
+    }
+
+    const newToken = user.getSignedJwtToken();
+
+    res.status(200).json({
+      success: true,
+      newToken
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Server error' });

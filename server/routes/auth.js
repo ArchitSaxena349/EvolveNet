@@ -52,4 +52,9 @@ router.put(
   authController.resetPassword
 );
 
-module.exports = router; 
+// @route   POST /api/auth/refresh-token
+// @desc    Refresh JWT token
+// @access  Public
+router.post('/refresh-token', authController.refreshToken);
+
+module.exports = router;
