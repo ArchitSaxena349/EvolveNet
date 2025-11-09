@@ -64,7 +64,7 @@ EventSchema.methods.isFull = function() {
 
 // Check if user is registered
 EventSchema.methods.isRegistered = function(userId) {
-  return this.attendees.includes(userId);
+  return this.attendees.some(att => String(att) === String(userId));
 };
 
 module.exports = mongoose.model('Event', EventSchema); 

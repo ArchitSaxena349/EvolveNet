@@ -53,12 +53,12 @@ GroupSchema.virtual('membersCount').get(function() {
 
 // Check if user is member
 GroupSchema.methods.isMember = function(userId) {
-  return this.members.includes(userId);
+  return this.members.some(member => String(member) === String(userId));
 };
 
 // Check if user is admin
 GroupSchema.methods.isAdmin = function(userId) {
-  return this.admins.includes(userId);
+  return this.admins.some(admin => String(admin) === String(userId));
 };
 
 module.exports = mongoose.model('Group', GroupSchema); 

@@ -10,6 +10,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Events from './pages/Events';
 import Profile from './pages/Profile';
+import EventDetail from './pages/EventDetail';
+import ProtectedRoute from './components/ProtectedRoute';
 
 // Create theme
 const theme = createTheme({
@@ -37,7 +39,12 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/events" element={<Events />} />
-                <Route path="/profile" element={<Profile />} />
+                <Route path="/events/:id" element={<EventDetail />} />
+                <Route path="/profile" element={
+                  <ProtectedRoute>
+                    <Profile />
+                  </ProtectedRoute>
+                } />
                 <Route path="*" element={<Navigate to="/" />} />
               </Routes>
             </main>

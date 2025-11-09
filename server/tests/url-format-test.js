@@ -47,8 +47,12 @@ function validateMongoDBUrl(url) {
   return true;
 }
 
-// Test the current connection string
-const uri = 'mongodb+srv://architsaxena349:Archit01@evolvenet.gf3ijvv.mongodb.net/evolvenet?retryWrites=true&w=majority&authSource=admin&authMechanism=SCRAM-SHA-256&tls=true&tlsInsecure=false';
+// Test the current connection string from environment
+const uri = process.env.MONGODB_URI;
+if (!uri) {
+  console.error('No MONGODB_URI provided in environment. Skipping URL format test.');
+  process.exit(0);
+}
 
-console.log('Analyzing MongoDB Atlas connection string...\n');
+console.log('Analyzing MongoDB Atlas connection string from MONGODB_URI...\n');
 validateMongoDBUrl(uri);

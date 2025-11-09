@@ -37,16 +37,15 @@ const Register = () => {
       return;
     }
 
-    const result = await register({
-      name: formData.name,
-      email: formData.email,
-      password: formData.password
-    });
-
-    if (result.success) {
+    try {
+      await register({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password
+      });
       navigate('/profile');
-    } else {
-      setError(result.error);
+    } catch (err) {
+      setError(err.response?.data?.error || err.response?.data?.message || 'Registration failed');
     }
   };
 

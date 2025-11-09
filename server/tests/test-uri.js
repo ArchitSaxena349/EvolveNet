@@ -1,6 +1,12 @@
 const { MongoClient } = require('mongodb');
 
-const uri = 'mongodb+srv://architsaxena349:Archit01@evolvenet.gf3ijvv.mongodb.net/evolvenet?retryWrites=true&w=majority&appName=EvolveNet';
+const envUri = process.env.MONGODB_URI;
+if (!envUri) {
+  console.error('No MONGODB_URI set in environment. Skipping test.');
+  process.exit(0);
+}
+
+const uri = envUri;
 
 function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));

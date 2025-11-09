@@ -57,4 +57,9 @@ router.put(
 // @access  Public
 router.post('/refresh-token', authController.refreshToken);
 
+// @route   POST /api/auth/logout
+// @desc    Logout and revoke refresh token
+// @access  Public
+router.post('/logout', authController.logout);
+
 module.exports = router;

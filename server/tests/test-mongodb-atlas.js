@@ -1,11 +1,14 @@
 const { MongoClient } = require('mongodb');
 
 async function testMongoDBAtlasConnection() {
-  const uri = 'mongodb+srv://architsaxena349:Archit01@evolvenet.gf3ijvv.mongodb.net/?retryWrites=true&w=majority';
-  
-  console.log('Testing MongoDB Atlas connection...');
-  console.log('Connection string (with hidden password):', 
-    uri.replace(/:([^:@]+)@/, ':****@'));
+  const uri = process.env.MONGODB_URI;
+  if (!uri) {
+    console.error('No MONGODB_URI set in environment. Skipping MongoDB Atlas connection test.');
+    process.exit(0);
+  }
+
+  console.log('Testing MongoDB Atlas connection using MONGODB_URI...');
+  console.log('Connection string (hidden password):', uri.replace(/:([^:@]+)@/, ':****@'));
   
   try {
     const client = new MongoClient(uri);

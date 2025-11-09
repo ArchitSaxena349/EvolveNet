@@ -8,11 +8,18 @@ const TokenSchema = new mongoose.Schema({
   },
   refreshToken: {
     type: String,
-    required: true
+    required: true,
+    index: true
   },
   expiresAt: {
     type: Date,
     required: true
+  },
+  // Mark token as revoked/blacklisted without deleting it
+  blacklisted: {
+    type: Boolean,
+    default: false,
+    index: true
   },
   createdAt: {
     type: Date,

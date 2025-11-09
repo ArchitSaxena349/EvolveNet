@@ -29,12 +29,11 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-
-    const result = await login(formData.email, formData.password);
-    if (result.success) {
+    try {
+      await login(formData.email, formData.password);
       navigate('/profile');
-    } else {
-      setError(result.error);
+    } catch (err) {
+      setError(err.response?.data?.error || err.response?.data?.message || 'Login failed');
     }
   };
 

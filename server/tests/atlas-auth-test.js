@@ -2,21 +2,15 @@ const { MongoClient } = require('mongodb');
 const mongoose = require('mongoose');
 
 async function testAtlasAuth() {
-  // Test different authentication scenarios
-  const baseUri = 'mongodb+srv://architsaxena349:Archit01@evolvenet.gf3ijvv.mongodb.net';
+  const baseUri = process.env.MONGODB_URI;
+  if (!baseUri) {
+    console.error('No MONGODB_URI provided in environment. Skipping Atlas auth tests.');
+    process.exit(0);
+  }
+
   const testCases = [
-    {
-      name: 'Default connection',
-      uri: `${baseUri}/?retryWrites=true&w=majority`
-    },
-    {
-      name: 'With database name',
-      uri: `${baseUri}/evolvenet?retryWrites=true&w=majority`
-    },
-    {
-      name: 'With authSource',
-      uri: `${baseUri}/evolvenet?retryWrites=true&w=majority&authSource=admin`
-    }
+    { name: 'Default connection', uri: `${baseUri}` },
+    { name: 'With database name', uri: `${baseUri}/evolvenet` }
   ];
 
   for (const test of testCases) {

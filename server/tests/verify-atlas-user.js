@@ -1,17 +1,19 @@
 const { MongoClient } = require('mongodb');
 
 async function verifyAtlasUser() {
-  // Use admin database for authentication
-  const uri = 'mongodb+srv://architsaxena349:Archit01@evolvenet.gf3ijvv.mongodb.net/admin';
-  
+  // Use environment-provided URI
+  const uri = process.env.MONGODB_URI;
+
+  if (!uri) {
+    console.error('No MONGODB_URI set. Skipping verify-atlas-user test.');
+    process.exit(0);
+  }
+
   console.log('Verifying MongoDB Atlas user...');
-  console.log('URI (with hidden password):', uri.replace(/:([^:@]+)@/, ':****@'));
+  console.log('URI (hidden password):', uri.replace(/:([^:@]+)@/, ':****@'));
   
   try {
-    const client = new MongoClient(uri, {
-      serverSelectionTimeoutMS: 5000,
-      authSource: 'admin'
-    });
+    const client = new MongoClient(uri, { serverSelectionTimeoutMS: 5000 });
 
     console.log('\nAttempting connection...');
     await client.connect();

@@ -107,11 +107,14 @@ Set up environment variables:
 Create a `.env` file in the root directory and define the following:
 
 ```env
-MONGO_URI=your_mongodb_connection_string
+MONGODB_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_secret
-JWT_REFRESH_SECRET=your_jwt_refresh_secret
-EMAIL_USER=your_email@example.com
-EMAIL_PASS=your_email_password_or_app_password
+JWT_EXPIRE=1h
+JWT_REFRESH_EXPIRE=7d
+EMAIL_SERVICE=your_email_service_provider (e.g. Gmail)
+EMAIL_USERNAME=your_email@example.com
+EMAIL_PASSWORD=your_email_password_or_app_password
+EMAIL_FROM="Your App <no-reply@example.com>"
 CLIENT_URL=http://localhost:3000
 ```
 
@@ -124,6 +127,25 @@ CLIENT_URL=http://localhost:3000
 ```bash
 npm run dev
 ```
+
+### Cleaning and organizing assets
+
+The repo includes helper scripts to clean temporary files and consolidate frontend assets:
+
+- Run the cleaner (removes debug logs and .DS_Store files):
+
+```bash
+npm run clean
+```
+
+- To consolidate image assets into `client/public/assets/` and update client references run:
+
+```bash
+node scripts/organize-assets.js
+```
+
+The `organize-assets` script moves files from `logo/` and `client/public/` into `client/public/assets/` and updates `index.html` and `manifest.json` accordingly. The script makes backups of overwritten files with `.bak` suffix.
+
 
 ### Production Mode
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   Container,
   Typography,
@@ -14,6 +14,8 @@ import {
 } from '@mui/material';
 import { Event as EventIcon, LocationOn, CalendarToday } from '@mui/icons-material';
 import axios from 'axios';
+import { AuthContext } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const Events = () => {
   const [events, setEvents] = useState([]);
@@ -27,7 +29,7 @@ const Events = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const res = await axios.get('/api/events');
+  const res = await axios.get('/api/events');
         setEvents(res.data);
         setLoading(false);
       } catch (err) {
@@ -38,6 +40,8 @@ const Events = () => {
 
     fetchEvents();
   }, []);
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const handleFilterChange = (e) => {
     setFilters({
@@ -158,7 +162,7 @@ const Events = () => {
                 </Box>
               </CardContent>
               <CardActions>
-                <Button size="small" color="primary">
+                <Button size="small" color="primary" onClick={() => navigate(`/events/${event._id}`)}>
                   Learn More
                 </Button>
                 <Button size="small" color="primary">

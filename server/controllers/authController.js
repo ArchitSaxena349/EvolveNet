@@ -9,8 +9,8 @@ const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
   service: process.env.EMAIL_SERVICE,
   auth: {
-    user: process.env.EMAIL_USERNAME,
-    pass: process.env.EMAIL_PASSWORD
+    user: process.env.EMAIL_USERNAME || process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASSWORD || process.env.EMAIL_PASS
   }
 });
 
@@ -40,12 +40,18 @@ exports.register = async (req, res) => {
       password
     });
 
-    // Generate token
+    // Generate access token
     const token = user.getSignedJwtToken();
+
+    // Generate and save refresh token
+    const refreshToken = crypto.randomBytes(40).toString('hex');
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+    await Token.create({ user: user._id, refreshToken, expiresAt });
 
     res.status(201).json({
       success: true,
       token,
+      refreshToken,
       user: {
         id: user._id,
         name: user.name,
@@ -184,24 +190,28 @@ exports.forgotPassword = async (req, res) => {
 exports.refreshToken = async (req, res) => {
   try {
     const { token } = req.body;
-    
+
     if (!token) {
       return res.status(401).json({ error: 'No token provided' });
     }
 
-    // Find the refresh token
+    // Find the refresh token (stored as plain string)
     const refreshTokenDoc = await Token.findOne({ refreshToken: token });
     if (!refreshTokenDoc) {
       return res.status(401).json({ error: 'Invalid refresh token' });
     }
 
-    // Check if token is expired
+    // Check blacklist/expiry
+    if (refreshTokenDoc.blacklisted) {
+      return res.status(401).json({ error: 'Refresh token revoked' });
+    }
+
     if (refreshTokenDoc.expiresAt < new Date()) {
-      await Token.findByIdAndDelete(refreshTokenDoc._id);
+      await Token.findByIdAndDelete(refreshTokenDoc._id).catch(() => {});
       return res.status(401).json({ error: 'Refresh token expired' });
     }
 
-    // Get user and generate new token
+    // Get user and generate new access token
     const user = await User.findById(refreshTokenDoc.user);
     if (!user) {
       return res.status(401).json({ error: 'User not found' });
@@ -209,10 +219,7 @@ exports.refreshToken = async (req, res) => {
 
     const newToken = user.getSignedJwtToken();
 
-    res.status(200).json({
-      success: true,
-      newToken
-    });
+    res.status(200).json({ success: true, newToken });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Server error' });
@@ -257,3 +264,30 @@ exports.resetPassword = async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 }; 
+
+// @desc    Logout (revoke refresh token)
+// @route   POST /api/auth/logout
+// @access  Public (requires refresh token in body)
+exports.logout = async (req, res) => {
+  try {
+    const { token } = req.body;
+    if (!token) {
+      return res.status(400).json({ error: 'Refresh token required' });
+    }
+
+    // Find refresh token and mark blacklisted (or remove)
+    const refreshTokenDoc = await Token.findOne({ refreshToken: token });
+    if (!refreshTokenDoc) {
+      // idempotent: token already gone
+      return res.status(200).json({ success: true });
+    }
+
+    refreshTokenDoc.blacklisted = true;
+    await refreshTokenDoc.save();
+
+    return res.status(200).json({ success: true });
+  } catch (err) {
+    console.error('Logout error:', err);
+    return res.status(500).json({ error: 'Server error' });
+  }
+};

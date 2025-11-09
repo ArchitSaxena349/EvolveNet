@@ -13,6 +13,7 @@
 build-output.log
 build-error.log
 build-output.txt
+build-debug.txt
 
 # misc
 .DS_Store

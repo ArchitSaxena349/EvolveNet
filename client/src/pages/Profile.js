@@ -63,7 +63,8 @@ const Profile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await axios.get(`/api/users/${user._id}`);
+        // Use auth/me which returns the current user's info
+        const res = await axios.get('/api/auth/me');
         setProfile(res.data);
         setFormData({
           name: res.data.name,
@@ -95,15 +96,16 @@ const Profile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.put(`/api/users/${user._id}`, {
-        ...formData,
-        profile: {
-          ...profile.profile,
-          bio: formData.bio,
-          location: formData.location,
-          skills: formData.skills
-        }
-      });
+      // Update name/email/password via /api/users/profile
+      const payload = {
+        name: formData.name,
+        email: profile.email
+      };
+      // If user provided a password field in formData, include it (not present in current form)
+      if (formData.password) payload.password = formData.password;
+
+      const res = await axios.put('/api/users/profile', payload);
+      // server returns updated user
       setProfile(res.data);
       setEditing(false);
     } catch (err) {
@@ -114,7 +116,7 @@ const Profile = () => {
   const handleAddExperience = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.put('/api/users/experience', experienceForm);
+      const res = await axios.put('/api/users/profile/experience', experienceForm);
       setProfile({
         ...profile,
         profile: {
@@ -140,7 +142,7 @@ const Profile = () => {
   const handleAddEducation = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.put('/api/users/education', educationForm);
+      const res = await axios.put('/api/users/profile/education', educationForm);
       setProfile({
         ...profile,
         profile: {
@@ -166,7 +168,7 @@ const Profile = () => {
   const handleAddSkill = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.put('/api/users/skills', { skill: newSkill });
+      const res = await axios.put('/api/users/profile/skills', { skill: newSkill });
       setProfile({
         ...profile,
         profile: {
@@ -183,10 +185,7 @@ const Profile = () => {
 
   const handleDeleteSkill = async (skill) => {
     try {
-      const res = await axios.put('/api/users/skills', {
-        skill,
-        action: 'delete'
-      });
+      const res = await axios.put('/api/users/profile/skills', { skill, action: 'delete' });
       setProfile({
         ...profile,
         profile: {
@@ -199,7 +198,7 @@ const Profile = () => {
     }
   };
 
-  if (!profile) {
+    if (!profile) {
     return (
       <Container>
         <Typography>Loading...</Typography>

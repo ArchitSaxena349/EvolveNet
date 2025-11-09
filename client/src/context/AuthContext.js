@@ -23,9 +23,9 @@ export const AuthProvider = ({ children }) => {
       if (error.response?.status === 401 && !originalRequest._retry) {
         originalRequest._retry = true;
         try {
-          const token = localStorage.getItem('token');
-          if (token) {
-            const response = await axios.post('/api/auth/refresh-token', { token });
+          const refreshToken = localStorage.getItem('refreshToken');
+          if (refreshToken) {
+            const response = await axios.post('/api/auth/refresh-token', { token: refreshToken });
             const { newToken } = response.data;
             localStorage.setItem('token', newToken);
             axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
@@ -35,6 +35,7 @@ export const AuthProvider = ({ children }) => {
         } catch (refreshError) {
           console.error('Token refresh failed:', refreshError);
           localStorage.removeItem('token');
+          localStorage.removeItem('refreshToken');
           delete axios.defaults.headers.common['Authorization'];
           setUser(null);
         }
@@ -68,9 +69,14 @@ export const AuthProvider = ({ children }) => {
     try {
       setError(null);
       const response = await axios.post('/api/auth/login', { email, password });
-      const { token, user } = response.data;
-      localStorage.setItem('token', token);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      const { token, refreshToken, user } = response.data;
+      if (token) {
+        localStorage.setItem('token', token);
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      }
+      if (refreshToken) {
+        localStorage.setItem('refreshToken', refreshToken);
+      }
       setUser(user);
       return user;
     } catch (err) {
@@ -84,9 +90,14 @@ export const AuthProvider = ({ children }) => {
     try {
       setError(null);
       const response = await axios.post('/api/auth/register', userData);
-      const { token, user } = response.data;
-      localStorage.setItem('token', token);
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      const { token, refreshToken, user } = response.data;
+      if (token) {
+        localStorage.setItem('token', token);
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      }
+      if (refreshToken) {
+        localStorage.setItem('refreshToken', refreshToken);
+      }
       setUser(user);
       return user;
     } catch (err) {
@@ -97,10 +108,23 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
-    delete axios.defaults.headers.common['Authorization'];
-    setUser(null);
-    setError(null);
+    (async () => {
+      try {
+        const refreshToken = localStorage.getItem('refreshToken');
+        if (refreshToken) {
+          // attempt to revoke refresh token on server (idempotent)
+          await axios.post('/api/auth/logout', { token: refreshToken }).catch(() => {});
+        }
+      } catch (err) {
+        // swallow errors to ensure logout proceeds locally
+      } finally {
+        localStorage.removeItem('token');
+        localStorage.removeItem('refreshToken');
+        delete axios.defaults.headers.common['Authorization'];
+        setUser(null);
+        setError(null);
+      }
+    })();
   };
 
   const clearError = () => {

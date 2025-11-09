@@ -49,4 +49,19 @@ router.put(
   userController.updateProfile
 );
 
+// @route   PUT /api/users/profile/experience
+// @desc    Add experience to user's profile
+// @access  Private
+router.put('/profile/experience', auth, userController.addExperience);
+
+// @route   PUT /api/users/profile/education
+// @desc    Add education to user's profile
+// @access  Private
+router.put('/profile/education', auth, userController.addEducation);
+
+// @route   PUT /api/users/profile/skills
+// @desc    Add or remove skills from user's profile
+// @access  Private
+router.put('/profile/skills', auth, userController.updateSkills);
+
 module.exports = router; 
