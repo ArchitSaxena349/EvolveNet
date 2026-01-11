@@ -24,6 +24,9 @@ const connectionRoutes = require('./routes/connections');
 // Initialize App
 const app = express();
 
+// Trust Proxy (for Heroku/Render/Vercel/Rate Limit)
+app.set('trust proxy', 1);
+
 // Security Middlewares
 app.use(cors({
   origin: [
@@ -80,7 +83,7 @@ app.use('/api/connections', connectionRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.status(200).json({ 
+  res.status(200).json({
     status: 'ok',
     mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
   });
@@ -121,7 +124,7 @@ const connectDB = async () => {
 // Error Handling
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ 
+  res.status(500).json({
     error: 'Something went wrong!',
     message: process.env.NODE_ENV === 'development' ? err.message : undefined
   });
@@ -130,7 +133,7 @@ app.use((err, req, res, next) => {
 // Start Server
 const startServer = async () => {
   const PORT = process.env.PORT || 5000;
-  
+
   // Try to connect to MongoDB first
   const isConnected = await connectDB();
   if (!isConnected) {

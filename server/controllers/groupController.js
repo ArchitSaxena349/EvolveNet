@@ -129,7 +129,7 @@ const deleteGroup = async (req, res) => {
       return res.status(401).json({ error: 'User not authorized' });
     }
 
-    await group.remove();
+    await group.deleteOne();
     res.json({ message: 'Group removed' });
   } catch (err) {
     console.error(err.message);

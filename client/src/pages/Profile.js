@@ -99,7 +99,9 @@ const Profile = () => {
       // Update name/email/password via /api/users/profile
       const payload = {
         name: formData.name,
-        email: profile.email
+        email: profile.email,
+        bio: formData.bio,
+        location: formData.location
       };
       // If user provided a password field in formData, include it (not present in current form)
       if (formData.password) payload.password = formData.password;
@@ -198,7 +200,7 @@ const Profile = () => {
     }
   };
 
-    if (!profile) {
+  if (!profile) {
     return (
       <Container>
         <Typography>Loading...</Typography>
@@ -426,6 +428,7 @@ const Profile = () => {
         <DialogContent>
           <form onSubmit={handleAddExperience}>
             <TextField
+              autoFocus
               fullWidth
               label="Title"
               name="title"
@@ -505,6 +508,7 @@ const Profile = () => {
         <DialogContent>
           <form onSubmit={handleAddEducation}>
             <TextField
+              autoFocus
               fullWidth
               label="School"
               name="school"
@@ -585,6 +589,7 @@ const Profile = () => {
         <DialogContent>
           <form onSubmit={handleAddSkill}>
             <TextField
+              autoFocus
               fullWidth
               label="Skill"
               value={newSkill}

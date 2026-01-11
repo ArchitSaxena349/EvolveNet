@@ -30,10 +30,12 @@ ConnectionSchema.index({ user: 1, connectedUser: 1 }, { unique: true });
 ConnectionSchema.index({ status: 1 });
 
 // Prevent duplicate connections
-ConnectionSchema.pre('save', async function(next) {
+ConnectionSchema.pre('save', async function (next) {
+  // Check if we are checking against OTHER connections
   const existingConnection = await this.constructor.findOne({
     user: this.user,
-    connectedUser: this.connectedUser
+    connectedUser: this.connectedUser,
+    _id: { $ne: this._id }
   });
 
   if (existingConnection) {

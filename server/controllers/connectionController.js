@@ -14,9 +14,9 @@ const getConnections = async (req, res) => {
       ],
       status: 'accepted'
     })
-    .populate('user', 'name email')
-    .populate('connectedUser', 'name email')
-    .sort({ createdAt: -1 });
+      .populate('user', 'name email')
+      .populate('connectedUser', 'name email')
+      .sort({ createdAt: -1 });
 
     res.json(connections);
   } catch (err) {
@@ -34,8 +34,8 @@ const getConnectionRequests = async (req, res) => {
       connectedUser: req.user.id,
       status: 'pending'
     })
-    .populate('user', 'name email')
-    .sort({ createdAt: -1 });
+      .populate('user', 'name email')
+      .sort({ createdAt: -1 });
 
     res.json(requests);
   } catch (err) {
@@ -103,7 +103,7 @@ const acceptConnectionRequest = async (req, res) => {
     res.json(connection);
   } catch (err) {
     console.error(err.message);
-    res.status(500).json({ error: 'Server Error' });
+    res.status(500).json({ error: err.message });
   }
 };
 
@@ -151,7 +151,7 @@ const removeConnection = async (req, res) => {
       return res.status(401).json({ error: 'User not authorized' });
     }
 
-    await connection.remove();
+    await connection.deleteOne();
     res.json({ message: 'Connection removed' });
   } catch (err) {
     console.error(err.message);

@@ -129,7 +129,7 @@ const deleteEvent = async (req, res) => {
       return res.status(401).json({ error: 'User not authorized' });
     }
 
-    await event.remove();
+    await event.deleteOne();
     res.json({ message: 'Event removed' });
   } catch (err) {
     console.error(err.message);

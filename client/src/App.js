@@ -8,8 +8,11 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Events from './pages/Events';
+import Groups from './pages/Groups';
+import GroupDetail from './pages/GroupDetail';
+import Connections from './pages/Connections';
 import Profile from './pages/Profile';
+import Events from './pages/Events';
 import EventDetail from './pages/EventDetail';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -27,7 +30,7 @@ const theme = createTheme({
 
 function App() {
   return (
-    <Router>
+    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <AuthProvider>
@@ -40,6 +43,9 @@ function App() {
                 <Route path="/register" element={<Register />} />
                 <Route path="/events" element={<Events />} />
                 <Route path="/events/:id" element={<EventDetail />} />
+                <Route path="/groups" element={<Groups />} />
+                <Route path="/groups/:id" element={<GroupDetail />} />
+                <Route path="/connections" element={<Connections />} />
                 <Route path="/profile" element={
                   <ProtectedRoute>
                     <Profile />
