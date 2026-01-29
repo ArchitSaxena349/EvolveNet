@@ -14,6 +14,26 @@ router.get('/', auth, userController.getUsers);
 // @access  Private/Admin
 router.get('/:id', auth, userController.getUserById);
 
+// @route   PUT /api/users/:id
+// @desc    Update user
+// @access  Private/Admin
+router.put(
+  '/:id',
+  [
+    auth,
+    [
+      check('name', 'Name is required').not().isEmpty(),
+      check('email', 'Please include a valid email').isEmail()
+    ]
+  ],
+  userController.updateUser
+);
+
+// @route   DELETE /api/users/:id
+// @desc    Delete user
+// @access  Private/Admin
+router.delete('/:id', auth, userController.deleteUser);
+
 // @route   PUT /api/users/profile
 // @desc    Update user profile
 // @access  Private
@@ -43,25 +63,5 @@ router.put('/profile/education', auth, userController.addEducation);
 // @desc    Add or remove skills from user's profile
 // @access  Private
 router.put('/profile/skills', auth, userController.updateSkills);
-
-// @route   PUT /api/users/:id
-// @desc    Update user
-// @access  Private/Admin
-router.put(
-  '/:id',
-  [
-    auth,
-    [
-      check('name', 'Name is required').not().isEmpty(),
-      check('email', 'Please include a valid email').isEmail()
-    ]
-  ],
-  userController.updateUser
-);
-
-// @route   DELETE /api/users/:id
-// @desc    Delete user
-// @access  Private/Admin
-router.delete('/:id', auth, userController.deleteUser);
 
 module.exports = router; 

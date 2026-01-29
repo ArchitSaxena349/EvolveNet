@@ -1,110 +1,119 @@
+# EvolveNet - Alumni Association Platform
 
----
+A modern, full-stack professional networking platform designed for alumni communities to connect, collaborate, and grow together.
 
-# ⚡ EvolveNet
+## Overview
 
-*A full-stack professional networking platform built with the MERN stack.*
+**EvolveNet** is a comprehensive MERN stack application that empowers users to:
 
----
+- **Build professional profiles** – Showcase your background, skills, and achievements
+- **Network with peers** – Send and manage connection requests with other members
+- **Join communities** – Participate in interest-based groups and discussions
+- **Discover events** – Create, promote, and RSVP to professional events
+- **Stay connected** – Maintain and grow your alumni network
 
-## 🌐 Overview
+## Features
 
-**EvolveNet** is a modern, full-featured professional networking platform designed to empower users to:
+### User Authentication & Security
+- **JWT-based authentication** with secure token management
+- **Email verification** via Nodemailer
+- **Password hashing** with Bcrypt
+- Refresh token functionality for persistent sessions
+- Rate limiting to prevent brute-force attacks
 
-* Build and manage professional profiles
-* Connect with peers and industry experts
-* Join communities and interest groups
-* Create, promote, and attend professional events
+### Profile Management
+- Create and customize professional profiles
+- View and edit user information
+- Display network statistics and connections
 
-Built using the **MERN stack** (MongoDB, Express.js, React.js, Node.js), EvolveNet provides a seamless, secure, and scalable experience—ideal for anyone looking to expand their professional presence.
+### Networking & Connections
+- Send, accept, and manage connection requests
+- View mutual connections
+- Build and maintain professional relationships
 
----
+### Groups & Communities
+- Create and join interest-based groups
+- Foster collaboration within communities
+- Group discovery and filtering
 
-## 🚀 Features
+### Event Management
+- Create and manage professional events
+- RSVP and event registration
+- View upcoming and past events
+- Event details and attendee information
 
-### 👤 User Authentication
-
-* Secure sign-up and login flow using **JWT**
-* **Email verification** via **Nodemailer**
-* Refresh tokens for persistent sessions
-
-### 📝 Profile Management
-
-* Create, view, and edit detailed professional profiles
-
-### 🤝 Connections
-
-* Send and accept connection requests
-* View mutual connections and grow your network
-
-### 🌍 Communities
-
-* Create and join **groups** based on shared interests or industries
-* Foster discussion and collaboration with peers
-
-### 📅 Event Management
-
-* Organize and promote professional events
-* RSVP and view upcoming or past events
-
----
-
-## 🛡️ Security Highlights
-
-EvolveNet is designed with strong security principles:
-
-* **JWT & Refresh Tokens** for secure session management
-* **Bcrypt** hashing for all passwords
-* **Rate Limiting** to prevent brute-force attacks
-* **CORS** properly configured
-* **Helmet.js** to set secure HTTP headers
-
----
-
-## 🧱 Tech Stack
+## Technology Stack
 
 ### Frontend
-
-* React.js
-* Axios
-* React Router
-* Tailwind CSS (if you're using it—optional to list)
+- **React.js** – Modern UI library
+- **React Router** – Client-side navigation
+- **Axios** – HTTP client for API requests
+- **CSS** – Styling
 
 ### Backend
+- **Node.js** – JavaScript runtime
+- **Express.js** – Web framework
+- **MongoDB** – NoSQL database
+- **Mongoose** – MongoDB object modeling
 
-* Node.js
-* Express.js
-* MongoDB (via Mongoose)
+### Security & Utilities
+- **bcrypt** – Password hashing and salting
+- **jsonwebtoken** – JWT authentication
+- **Nodemailer** – Email service for verification
+- **Helmet.js** – HTTP security headers
+- **CORS** – Cross-origin resource sharing
+- **dotenv** – Environment variable management
 
-### Libraries & Utilities
+## Project Structure
 
-* `bcrypt` – Password hashing
-* `jsonwebtoken` – JWT-based auth
-* `nodemailer` – Email verification
-* `helmet` – Secure HTTP headers
-* `cors` – Enable cross-origin requests
-* `dotenv` – Environment variable management
+```
+├── client/                    # React frontend application
+│   ├── src/
+│   │   ├── components/        # Reusable UI components
+│   │   ├── pages/             # Page components
+│   │   ├── context/           # React Context for state management
+│   │   ├── App.js
+│   │   └── index.js
+│   └── public/
+├── server/                    # Express backend application
+│   ├── controllers/           # Route handlers
+│   ├── models/                # MongoDB schemas
+│   ├── routes/                # API route definitions
+│   ├── middleware/            # Express middleware
+│   └── server.js
+└── README.md
+```
 
----
+## Installation & Setup
 
-## ⚙️ Installation
+### Prerequisites
+- Node.js (v14 or higher)
+- MongoDB (local or Atlas account)
+- Git
 
-Clone the repo:
+### Clone the Repository
 
 ```bash
 git clone https://github.com/ArchitSaxena349/EvolveNet.git
-cd EvolveNet
+cd "Alumni Association"
 ```
 
-Install backend and frontend dependencies:
+### Install Dependencies
 
 ```bash
+# Install root dependencies
 npm install
+
+# Install backend dependencies
+cd server && npm install && cd ..
+
+# Install frontend dependencies
+cd client && npm install && cd ..
 ```
 
-Set up environment variables:
+### Environment Configuration
 
-Create a `.env` file in the root directory and define the following:
+Create a `.env` file in the root directory with the following variables:
 
 ```env
 MONGODB_URI=your_mongodb_connection_string
@@ -118,63 +127,112 @@ EMAIL_FROM="Your App <no-reply@example.com>"
 CLIENT_URL=http://localhost:3000
 ```
 
----
+## Running the Application
 
-## 🧪 Running the App
+### Development Mode
 
-### Development Mode (with Hot Reloading)
+With hot reloading enabled:
 
 ```bash
 npm run dev
 ```
 
-### Cleaning and organizing assets
-
-The repo includes helper scripts to clean temporary files and consolidate frontend assets:
-
-- Run the cleaner (removes debug logs and .DS_Store files):
-
-```bash
-npm run clean
-```
-
-- To consolidate image assets into `client/public/assets/` and update client references run:
-
-```bash
-node scripts/organize-assets.js
-```
-
-The `organize-assets` script moves files from `logo/` and `client/public/` into `client/public/assets/` and updates `index.html` and `manifest.json` accordingly. The script makes backups of overwritten files with `.bak` suffix.
-
+This starts both the backend server and React development server concurrently.
 
 ### Production Mode
 
+Build and start the application:
+
 ```bash
-# Build the React client
+# Build the React client for production
 npm run build
 
 # Start the backend server
 npm start
 ```
 
----
+## Utility Scripts
 
-## 📄 License
+### Asset Organization
 
-This project is licensed under the [MIT License](LICENSE).
-Feel free to use, fork, or contribute 🤝
+Consolidate and organize frontend assets:
 
----
+```bash
+node scripts/organize-assets.js
+```
 
-## 🤝 Contributing
+This script moves files from `logo/` and `client/public/` into `client/public/assets/` and updates references in `index.html` and `manifest.json`. Backups are created with `.bak` extension.
 
-Pull requests are welcome. For major changes, please open an issue first to discuss what you’d like to change.
-Let's build something impactful together!
+### Cleanup
 
----
+Remove temporary files and debug logs:
 
-## 🙌 Acknowledgements
+```bash
+npm run clean
+```
 
-Thanks to all open-source contributors and tools that made this project possible!
+## API Documentation
 
----
+The backend provides the following API endpoints:
+
+### Authentication
+- `POST /api/auth/signup` – Register a new user
+- `POST /api/auth/login` – User login
+- `POST /api/auth/refresh-token` – Refresh JWT token
+
+### Users
+- `GET /api/users/:id` – Get user profile
+- `PUT /api/users/:id` – Update user profile
+
+### Connections
+- `POST /api/connections/send` – Send connection request
+- `GET /api/connections` – Get all connections
+- `PUT /api/connections/:id/accept` – Accept connection request
+
+### Groups
+- `GET /api/groups` – Get all groups
+- `POST /api/groups` – Create a new group
+- `GET /api/groups/:id` – Get group details
+
+### Events
+- `GET /api/events` – Get all events
+- `POST /api/events` – Create a new event
+- `GET /api/events/:id` – Get event details
+- `PUT /api/events/:id/rsvp` – RSVP to an event
+
+## Deployment
+
+### Frontend (Vercel/Netlify)
+1. Build the frontend: `npm run build`
+2. Deploy the `build/` folder to your hosting platform
+3. Set the backend API URL as an environment variable
+
+### Backend (Heroku/Railway/Render)
+1. Push your code to a Git repository
+2. Connect your repository to your hosting platform
+3. Add environment variables through the platform's dashboard
+4. Deploy
+
+## Contributing
+
+Contributions are welcome! To contribute:
+
+1. Fork the repository
+2. Create a new branch (`git checkout -b feature/your-feature`)
+3. Make your changes and commit (`git commit -am 'Add new feature'`)
+4. Push to the branch (`git push origin feature/your-feature`)
+5. Open a Pull Request
+
+For major changes, please open an issue first to discuss what you'd like to change.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE). Feel free to use, fork, or contribute!
+
+## Support
+
+If you encounter any issues or have questions, please open an issue on GitHub or contact the project maintainers.
+
+## Acknowledgements
+
+Thanks to all open-source contributors and the tools that made this project possible!

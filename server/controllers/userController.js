@@ -74,7 +74,7 @@ const deleteUser = async (req, res) => {
     await Token.deleteMany({ user: user._id });
 
     // Delete user
-    await user.deleteOne();
+    await user.remove();
     res.json({ message: 'User removed' });
   } catch (err) {
     console.error(err.message);
@@ -90,7 +90,7 @@ const deleteUser = async (req, res) => {
 // @access  Private
 const updateProfile = async (req, res) => {
   try {
-    const { name, email, password, bio, location } = req.body;
+    const { name, email, password } = req.body;
 
     const user = await User.findById(req.user.id);
     if (!user) {
@@ -100,13 +100,6 @@ const updateProfile = async (req, res) => {
     // Update user fields
     user.name = name || user.name;
     user.email = email || user.email;
-
-    // Update profile fields
-    if (bio || location) {
-      user.profile = user.profile || {};
-      if (bio) user.profile.bio = bio;
-      if (location) user.profile.location = location;
-    }
 
     if (password) {
       // Hash password

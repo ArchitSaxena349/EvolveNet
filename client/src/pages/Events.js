@@ -29,7 +29,7 @@ const Events = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const res = await axios.get('/api/events');
+  const res = await axios.get('/api/events');
         setEvents(res.data);
         setLoading(false);
       } catch (err) {
@@ -40,7 +40,7 @@ const Events = () => {
 
     fetchEvents();
   }, []);
-  // const { user } = useContext(AuthContext); // Unused
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleFilterChange = (e) => {
@@ -52,10 +52,10 @@ const Events = () => {
 
   const filteredEvents = events.filter(event => {
     const matchesType = !filters.type || event.type === filters.type;
-    const matchesLocation = !filters.location ||
-      (event.location.type === 'physical' &&
-        event.location.city.toLowerCase().includes(filters.location.toLowerCase()));
-    const matchesSearch = !filters.search ||
+    const matchesLocation = !filters.location || 
+      (event.location.type === 'physical' && 
+       event.location.city.toLowerCase().includes(filters.location.toLowerCase()));
+    const matchesSearch = !filters.search || 
       event.title.toLowerCase().includes(filters.search.toLowerCase()) ||
       event.description.toLowerCase().includes(filters.search.toLowerCase());
 

@@ -20,7 +20,8 @@
     "build": "cross-env DISABLE_ESLINT_PLUGIN=true react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "build:debug": "cross-env NODE_OPTIONS=--max-old-space-size=4096 DEBUG=* DISABLE_ESLINT_PLUGIN=true CI=false react-scripts build"
+    "build:debug": "cross-env NODE_OPTIONS=--max-old-space-size=4096 DEBUG=* DISABLE_ESLINT_PLUGIN=true CI=false react-scripts build",
+    "build:webpack": "webpack --config webpack.config.js --progress --stats-error-details"
   },
   "eslintConfig": {
     "extends": [
