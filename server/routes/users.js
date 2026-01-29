@@ -18,7 +18,7 @@ router.get('/:id', auth, userController.getUserById);
 // @desc    Update user
 // @access  Private/Admin
 router.put(
-  '/:id',
+  '/:id(^(?!profile)[a-f0-9]{24}$)',
   [
     auth,
     [
@@ -34,21 +34,7 @@ router.put(
 // @access  Private/Admin
 router.delete('/:id', auth, userController.deleteUser);
 
-// @route   PUT /api/users/profile
-// @desc    Update user profile
-// @access  Private
-router.put(
-  '/profile',
-  [
-    auth,
-    [
-      check('name', 'Name is required').not().isEmpty(),
-      check('email', 'Please include a valid email').isEmail()
-    ]
-  ],
-  userController.updateProfile
-);
-
+// Profile routes MUST come before /:id to avoid route collision
 // @route   PUT /api/users/profile/experience
 // @desc    Add experience to user's profile
 // @access  Private
@@ -63,5 +49,20 @@ router.put('/profile/education', auth, userController.addEducation);
 // @desc    Add or remove skills from user's profile
 // @access  Private
 router.put('/profile/skills', auth, userController.updateSkills);
+
+// @route   PUT /api/users/profile
+// @desc    Update user profile
+// @access  Private
+router.put(
+  '/profile',
+  [
+    auth,
+    [
+      check('name', 'Name is required').not().isEmpty(),
+      check('email', 'Please include a valid email').isEmail()
+    ]
+  ],
+  userController.updateProfile
+);
 
 module.exports = router; 
