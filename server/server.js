@@ -29,10 +29,10 @@ app.set('trust proxy', 1);
 
 // Security Middlewares
 app.use(cors({
-  origin: [
-    'https://evolve-net-hzuf.vercel.app',
+  origin: process.env.FRONTEND_URL ? [
+    process.env.FRONTEND_URL,
     'http://localhost:3000'
-  ],
+  ] : true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
