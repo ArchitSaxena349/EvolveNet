@@ -2,10 +2,9 @@ services:
   - type: web
     name: evolvenet
     env: node
+    rootDir: ./
     buildCommand: npm install
-    startCommand: node server/server.js
+    startCommand: cd server && node server.js
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: 10000
