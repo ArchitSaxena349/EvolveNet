@@ -51,7 +51,10 @@ const EventDetail = () => {
     </Container>
   );
 
-  const isRegistered = event.attendees?.some(a => String(a) === String(user?.id));
+  // Attendees come back populated as objects ({ _id, name, ... }) but locally
+  // we append the bare user id, so normalise both sides before comparing.
+  const attendeeId = (a) => String(a?._id || a);
+  const isRegistered = event.attendees?.some(a => attendeeId(a) === String(user?.id));
 
   const handleRegister = async () => {
     if (!user) return navigate('/login');
@@ -69,7 +72,7 @@ const EventDetail = () => {
     if (!user) return navigate('/login');
     try {
       await axios.delete(`/api/events/${event._id}/register`);
-      setEvent({ ...event, attendees: event.attendees.filter(a => String(a) !== String(user.id)) });
+      setEvent({ ...event, attendees: event.attendees.filter(a => attendeeId(a) !== String(user.id)) });
       setSnack({ open: true, message: 'Unregistered successfully', severity: 'success' });
     } catch (err) {
       console.error('Unregister error:', err);
@@ -84,15 +87,21 @@ const EventDetail = () => {
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
             <Typography variant="h4">{event.title}</Typography>
             <Box>
-              <Chip label={event.type} sx={{ mr: 1 }} />
+              {(event.tags || []).map((tag, i) => (
+                <Chip key={i} label={tag} sx={{ mr: 1 }} />
+              ))}
               <Chip label={`${event.attendees?.length || 0} attendees`} />
             </Box>
           </Box>
 
           <Typography paragraph>{event.description}</Typography>
 
-          <Typography variant="subtitle2" color="text.secondary">Start: {new Date(event.startDate).toLocaleString()}</Typography>
-          <Typography variant="subtitle2" color="text.secondary">End: {new Date(event.endDate || event.startDate).toLocaleString()}</Typography>
+          <Typography variant="subtitle2" color="text.secondary">
+            Date: {event.date ? new Date(event.date).toLocaleString() : 'TBD'}
+          </Typography>
+          <Typography variant="subtitle2" color="text.secondary">
+            Location: {event.location || 'TBD'}
+          </Typography>
 
           <Box sx={{ mt: 3 }}>
             {user ? (

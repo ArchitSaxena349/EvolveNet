@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   Typography,
@@ -9,12 +9,10 @@ import {
   Button,
   Box,
   TextField,
-  MenuItem,
   Chip
 } from '@mui/material';
 import { Event as EventIcon, LocationOn, CalendarToday } from '@mui/icons-material';
 import axios from 'axios';
-import { AuthContext } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const Events = () => {
@@ -40,7 +38,6 @@ const Events = () => {
 
     fetchEvents();
   }, []);
-  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleFilterChange = (e) => {
@@ -51,15 +48,15 @@ const Events = () => {
   };
 
   const filteredEvents = events.filter(event => {
-    const matchesType = !filters.type || event.type === filters.type;
-    const matchesLocation = !filters.location || 
-      (event.location.type === 'physical' && 
-       event.location.city.toLowerCase().includes(filters.location.toLowerCase()));
-    const matchesSearch = !filters.search || 
+    const matchesTag = !filters.type ||
+      (event.tags || []).some(tag => tag.toLowerCase().includes(filters.type.toLowerCase()));
+    const matchesLocation = !filters.location ||
+      (event.location || '').toLowerCase().includes(filters.location.toLowerCase());
+    const matchesSearch = !filters.search ||
       event.title.toLowerCase().includes(filters.search.toLowerCase()) ||
       event.description.toLowerCase().includes(filters.search.toLowerCase());
 
-    return matchesType && matchesLocation && matchesSearch;
+    return matchesTag && matchesLocation && matchesSearch;
   });
 
   if (loading) {
@@ -81,19 +78,12 @@ const Events = () => {
         <Grid container spacing={2}>
           <Grid item xs={12} sm={4}>
             <TextField
-              select
               fullWidth
-              label="Event Type"
+              label="Tag"
               name="type"
               value={filters.type}
               onChange={handleFilterChange}
-            >
-              <MenuItem value="">All Types</MenuItem>
-              <MenuItem value="conference">Conference</MenuItem>
-              <MenuItem value="workshop">Workshop</MenuItem>
-              <MenuItem value="webinar">Webinar</MenuItem>
-              <MenuItem value="networking">Networking</MenuItem>
-            </TextField>
+            />
           </Grid>
           <Grid item xs={12} sm={4}>
             <TextField
@@ -136,27 +126,23 @@ const Events = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                   <CalendarToday fontSize="small" sx={{ mr: 1 }} />
                   <Typography variant="body2">
-                    {new Date(event.startDate).toLocaleDateString()}
+                    {event.date ? new Date(event.date).toLocaleDateString() : 'Date TBD'}
                   </Typography>
                 </Box>
 
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                   <LocationOn fontSize="small" sx={{ mr: 1 }} />
                   <Typography variant="body2">
-                    {event.location.type === 'physical'
-                      ? `${event.location.city}, ${event.location.country}`
-                      : 'Virtual Event'}
+                    {event.location || 'Location TBD'}
                   </Typography>
                 </Box>
 
                 <Box sx={{ mb: 2 }}>
+                  {(event.tags || []).map((tag, i) => (
+                    <Chip key={i} label={tag} size="small" sx={{ mr: 1, mb: 0.5 }} />
+                  ))}
                   <Chip
-                    label={event.type}
-                    size="small"
-                    sx={{ mr: 1 }}
-                  />
-                  <Chip
-                    label={`${event.attendees.length} attendees`}
+                    label={`${event.attendees?.length || 0} attendees`}
                     size="small"
                   />
                 </Box>
@@ -165,7 +151,7 @@ const Events = () => {
                 <Button size="small" color="primary" onClick={() => navigate(`/events/${event._id}`)}>
                   Learn More
                 </Button>
-                <Button size="small" color="primary">
+                <Button size="small" color="primary" onClick={() => navigate(`/events/${event._id}`)}>
                   Register
                 </Button>
               </CardActions>

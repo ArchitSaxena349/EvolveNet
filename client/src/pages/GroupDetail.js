@@ -44,7 +44,7 @@ const GroupDetail = () => {
     const handleJoin = async () => {
         try {
             if (isMember) {
-                await axios.delete(`/api/groups/${id}/join`);
+                await axios.delete(`/api/groups/${id}/leave`);
             } else {
                 await axios.post(`/api/groups/${id}/join`);
             }

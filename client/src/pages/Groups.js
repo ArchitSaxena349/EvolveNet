@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Container,
     Typography,
@@ -19,7 +19,6 @@ import {
 import { Add as AddIcon, Group as GroupIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { AuthContext } from '../context/AuthContext';
 
 const Groups = () => {
     const [groups, setGroups] = useState([]);
@@ -29,7 +28,6 @@ const Groups = () => {
         description: '',
         tags: ''
     });
-    // const { user } = useContext(AuthContext); // Unused
     const navigate = useNavigate();
 
     useEffect(() => {

@@ -73,8 +73,8 @@ const deleteUser = async (req, res) => {
     // Delete user's tokens
     await Token.deleteMany({ user: user._id });
 
-    // Delete user
-    await user.remove();
+    // Delete user (Mongoose 7+ removed Document.remove())
+    await user.deleteOne();
     res.json({ message: 'User removed' });
   } catch (err) {
     console.error(err.message);
@@ -102,13 +102,17 @@ const updateProfile = async (req, res) => {
     user.email = email || user.email;
 
     if (password) {
-      // Hash password
-      const salt = await bcrypt.genSalt(10);
-      user.password = await bcrypt.hash(password, salt);
+      // Assign the plain password; the User pre-save hook hashes it.
+      // Hashing here too would double-hash and break login.
+      user.password = password;
     }
 
     await user.save();
-    res.json(user);
+
+    // Never return the password hash to the client
+    const safeUser = user.toObject();
+    delete safeUser.password;
+    res.json(safeUser);
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ error: 'Server Error' });

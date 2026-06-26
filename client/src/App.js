@@ -11,6 +11,9 @@ import Register from './pages/Register';
 import Events from './pages/Events';
 import Profile from './pages/Profile';
 import EventDetail from './pages/EventDetail';
+import Groups from './pages/Groups';
+import GroupDetail from './pages/GroupDetail';
+import Connections from './pages/Connections';
 import ProtectedRoute from './components/ProtectedRoute';
 
 // Create theme
@@ -43,6 +46,21 @@ function App() {
                 <Route path="/profile" element={
                   <ProtectedRoute>
                     <Profile />
+                  </ProtectedRoute>
+                } />
+                <Route path="/groups" element={
+                  <ProtectedRoute>
+                    <Groups />
+                  </ProtectedRoute>
+                } />
+                <Route path="/groups/:id" element={
+                  <ProtectedRoute>
+                    <GroupDetail />
+                  </ProtectedRoute>
+                } />
+                <Route path="/connections" element={
+                  <ProtectedRoute>
+                    <Connections />
                   </ProtectedRoute>
                 } />
                 <Route path="*" element={<Navigate to="/" />} />

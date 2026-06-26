@@ -10,9 +10,25 @@ const rateLimit = require('express-rate-limit');
 const xss = require('xss-clean');
 const mongoSanitize = require('express-mongo-sanitize');
 const path = require('path');
+const dns = require('dns');
 
 // Load Environment Variables
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
+
+// Force reliable public DNS resolvers for Node's c-ares resolver.
+// Some local setups (VPNs, DNS proxies, or a stale 127.0.0.1 entry) leave Node
+// unable to perform SRV lookups, which breaks `mongodb+srv://` connections with
+// `querySrv ECONNREFUSED`. Override via DNS_SERVERS env (comma-separated) if needed.
+const dnsServers = (process.env.DNS_SERVERS || '8.8.8.8,1.1.1.1')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean);
+try {
+  dns.setServers(dnsServers);
+  console.log('🔧 DNS resolvers set to:', dnsServers.join(', '));
+} catch (err) {
+  console.warn('⚠️ Could not set custom DNS servers:', err.message);
+}
 
 // Import routes
 const authRoutes = require('./routes/auth');
