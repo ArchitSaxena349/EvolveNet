@@ -107,11 +107,14 @@ const Connections = () => {
     // ... (keep usage of useEffects, API calls same)
 
     // Filtered users for "Find Alumni"
-    const filteredUsers = allUsers.filter(u =>
-        u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        u.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (u.role && u.role.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
+    const filteredUsers = allUsers.filter(u => {
+        const term = searchTerm.toLowerCase();
+        return (
+            (u.name && u.name.toLowerCase().includes(term)) ||
+            (u.email && u.email.toLowerCase().includes(term)) ||
+            (u.role && u.role.toLowerCase().includes(term))
+        );
+    });
 
     return (
         <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -129,12 +132,13 @@ const Connections = () => {
             {tabValue === 0 && (
                 <Grid container spacing={3}>
                     {connections.map((conn) => {
-                        const otherUser = conn.user._id === user._id ? conn.connectedUser : conn.user;
+                        const otherUser = conn.user?._id === user._id ? conn.connectedUser : conn.user;
+                        if (!otherUser) return null;
                         return (
                             <Grid item xs={12} sm={6} md={4} key={conn._id}>
                                 <Card>
                                     <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
-                                        <Avatar src={otherUser.profile?.picture} sx={{ mr: 2 }}>{otherUser.name[0]}</Avatar>
+                                        <Avatar src={otherUser.profile?.picture} sx={{ mr: 2 }}>{otherUser.name?.[0] || '?'}</Avatar>
                                         <Box>
                                             <Typography variant="h6">{otherUser.name}</Typography>
                                             <Typography variant="body2" color="text.secondary">{otherUser.email}</Typography>
@@ -160,7 +164,7 @@ const Connections = () => {
                         <Grid item xs={12} sm={6} md={4} key={req._id}>
                             <Card>
                                 <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
-                                    <Avatar src={req.user.profile?.picture} sx={{ mr: 2 }}>{req.user.name[0]}</Avatar>
+                                    <Avatar src={req.user.profile?.picture} sx={{ mr: 2 }}>{req.user.name?.[0] || '?'}</Avatar>
                                     <Box>
                                         <Typography variant="h6">{req.user.name}</Typography>
                                         <Typography variant="body2" color="text.secondary">
@@ -199,7 +203,7 @@ const Connections = () => {
                             <Grid item xs={12} sm={6} md={4} key={u._id}>
                                 <Card>
                                     <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
-                                        <Avatar src={u.profile?.picture} sx={{ mr: 2 }}>{u.name[0]}</Avatar>
+                                        <Avatar src={u.profile?.picture} sx={{ mr: 2 }}>{u.name?.[0] || '?'}</Avatar>
                                         <Box>
                                             <Typography variant="h6">{u.name}</Typography>
                                             <Typography variant="body2" color="text.secondary">{u.email}</Typography>
