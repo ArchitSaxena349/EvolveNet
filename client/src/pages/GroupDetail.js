@@ -10,8 +10,15 @@ import {
     Box,
     Chip,
     Divider,
-    Paper
+    Paper,
+    Stack,
+    CircularProgress,
 } from '@mui/material';
+import {
+    ArrowBack as ArrowBackIcon,
+    People as PeopleIcon,
+    Groups as GroupsIcon,
+} from '@mui/icons-material';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
@@ -56,17 +63,17 @@ const GroupDetail = () => {
 
     if (loading) {
         return (
-            <Container sx={{ py: 4 }}>
-                <Typography>Loading...</Typography>
-            </Container>
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 12 }}>
+                <CircularProgress />
+            </Box>
         );
     }
 
     if (!group) {
         return (
-            <Container sx={{ py: 4 }}>
-                <Typography>Group not found</Typography>
-                <Button onClick={() => navigate('/groups')} sx={{ mt: 2 }}>
+            <Container sx={{ py: 6, textAlign: 'center' }}>
+                <Typography variant="h6" gutterBottom>Group not found</Typography>
+                <Button startIcon={<ArrowBackIcon />} onClick={() => navigate('/groups')} sx={{ mt: 1 }}>
                     Back to Groups
                 </Button>
             </Container>
@@ -75,20 +82,41 @@ const GroupDetail = () => {
 
     return (
         <Container maxWidth="lg" sx={{ py: 4 }}>
-            <Button onClick={() => navigate('/groups')} sx={{ mb: 2 }}>
-                &larr; Back to Groups
+            <Button startIcon={<ArrowBackIcon />} onClick={() => navigate('/groups')} sx={{ mb: 2 }}>
+                Back to Groups
             </Button>
 
             <Grid container spacing={4}>
                 <Grid item xs={12} md={8}>
-                    <Card sx={{ mb: 4 }}>
-                        <CardContent>
-                            <Typography variant="h3" component="h1" gutterBottom>
-                                {group.name}
-                            </Typography>
-                            <Box sx={{ mb: 2 }}>
+                    <Card sx={{ mb: 4, overflow: 'hidden', '&:hover': { transform: 'none' } }}>
+                        {/* Gradient banner */}
+                        <Box
+                            sx={{
+                                p: { xs: 3, md: 4 },
+                                color: 'common.white',
+                                backgroundImage: 'linear-gradient(135deg, #4f46e5 0%, #6d28d9 55%, #06b6d4 130%)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 2,
+                            }}
+                        >
+                            <Avatar sx={{ bgcolor: 'rgba(255,255,255,0.2)', width: 56, height: 56 }}>
+                                <GroupsIcon />
+                            </Avatar>
+                            <Box>
+                                <Typography variant="h4" component="h1" sx={{ fontWeight: 800 }}>
+                                    {group.name}
+                                </Typography>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5, opacity: 0.9 }}>
+                                    <PeopleIcon fontSize="small" />
+                                    <Typography variant="body2">{group.members?.length || 0} members</Typography>
+                                </Box>
+                            </Box>
+                        </Box>
+                        <CardContent sx={{ p: { xs: 3, md: 4 } }}>
+                            <Box sx={{ mb: 2, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                                 {group.tags?.map((tag, index) => (
-                                    <Chip key={index} label={tag} sx={{ mr: 1 }} />
+                                    <Chip key={index} label={tag} color="primary" variant="outlined" size="small" />
                                 ))}
                             </Box>
                             <Typography variant="body1" paragraph>
@@ -99,6 +127,7 @@ const GroupDetail = () => {
                                 <Button
                                     variant={isMember ? "outlined" : "contained"}
                                     color={isMember ? "error" : "primary"}
+                                    size="large"
                                     onClick={handleJoin}
                                 >
                                     {isMember ? 'Leave Group' : 'Join Group'}
@@ -109,19 +138,19 @@ const GroupDetail = () => {
                 </Grid>
 
                 <Grid item xs={12} md={4}>
-                    <Paper sx={{ p: 2 }}>
+                    <Paper variant="outlined" sx={{ p: 2.5, borderRadius: 3 }}>
                         <Typography variant="h6" gutterBottom>
                             Members ({group.members?.length || 0})
                         </Typography>
                         <Divider sx={{ mb: 2 }} />
-                        <Box>
+                        <Stack spacing={2}>
                             {group.members?.map((member) => (
-                                <Box key={member._id} sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                                    <Avatar src={member.profile?.picture} sx={{ mr: 2 }}>
-                                        {member.name[0]}
+                                <Box key={member._id} sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                                    <Avatar src={member.profile?.picture} sx={{ bgcolor: 'primary.main' }}>
+                                        {(member.name || 'U').trim().charAt(0).toUpperCase()}
                                     </Avatar>
-                                    <Box>
-                                        <Typography variant="subtitle2">{member.name}</Typography>
+                                    <Box sx={{ minWidth: 0 }}>
+                                        <Typography variant="subtitle2" noWrap>{member.name}</Typography>
                                         <Typography variant="caption" color="text.secondary">
                                             {member.profile?.title || 'Member'}
                                         </Typography>
@@ -133,7 +162,7 @@ const GroupDetail = () => {
                                     No members yet.
                                 </Typography>
                             )}
-                        </Box>
+                        </Stack>
                     </Paper>
                 </Grid>
             </Grid>

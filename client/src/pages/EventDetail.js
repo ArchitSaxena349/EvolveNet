@@ -10,8 +10,17 @@ import {
   CircularProgress,
   Chip,
   Snackbar,
-  Alert
+  Alert,
+  Stack,
+  Divider,
 } from '@mui/material';
+import {
+  CalendarToday,
+  LocationOn,
+  People as PeopleIcon,
+  ArrowBack as ArrowBackIcon,
+  CheckCircle as CheckCircleIcon,
+} from '@mui/icons-material';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
 
@@ -40,14 +49,17 @@ const EventDetail = () => {
   }, [id]);
 
   if (loading) return (
-    <Container sx={{ py: 6, textAlign: 'center' }}>
+    <Box sx={{ display: 'flex', justifyContent: 'center', py: 12 }}>
       <CircularProgress />
-    </Container>
+    </Box>
   );
 
   if (!event) return (
-    <Container sx={{ py: 6 }}>
-      <Typography>Event not found.</Typography>
+    <Container sx={{ py: 6, textAlign: 'center' }}>
+      <Typography variant="h6" gutterBottom>Event not found.</Typography>
+      <Button startIcon={<ArrowBackIcon />} onClick={() => navigate('/events')}>
+        Back to Events
+      </Button>
     </Container>
   );
 
@@ -82,36 +94,68 @@ const EventDetail = () => {
 
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
-      <Card>
-        <CardContent>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-            <Typography variant="h4">{event.title}</Typography>
-            <Box>
-              {(event.tags || []).map((tag, i) => (
-                <Chip key={i} label={tag} sx={{ mr: 1 }} />
-              ))}
-              <Chip label={`${event.attendees?.length || 0} attendees`} />
-            </Box>
+      <Button
+        startIcon={<ArrowBackIcon />}
+        onClick={() => navigate('/events')}
+        sx={{ mb: 2 }}
+      >
+        Back to Events
+      </Button>
+
+      <Card sx={{ overflow: 'hidden', '&:hover': { transform: 'none' } }}>
+        {/* Gradient banner */}
+        <Box
+          sx={{
+            p: { xs: 3, md: 4 },
+            color: 'common.white',
+            backgroundImage: 'linear-gradient(135deg, #4f46e5 0%, #6d28d9 55%, #06b6d4 130%)',
+          }}
+        >
+          <Typography variant="h4" component="h1" sx={{ fontWeight: 800 }}>
+            {event.title}
+          </Typography>
+          {isRegistered && (
+            <Chip
+              icon={<CheckCircleIcon />}
+              label="You're registered"
+              size="small"
+              sx={{ mt: 1.5, color: 'common.white', bgcolor: 'rgba(255,255,255,0.2)' }}
+            />
+          )}
+        </Box>
+
+        <CardContent sx={{ p: { xs: 3, md: 4 } }}>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mb: 3 }}>
+            {(event.tags || []).map((tag, i) => (
+              <Chip key={i} label={tag} color="primary" variant="outlined" size="small" />
+            ))}
+            <Chip icon={<PeopleIcon />} label={`${event.attendees?.length || 0} attendees`} size="small" />
           </Box>
 
           <Typography paragraph>{event.description}</Typography>
 
-          <Typography variant="subtitle2" color="text.secondary">
-            Date: {event.date ? new Date(event.date).toLocaleString() : 'TBD'}
-          </Typography>
-          <Typography variant="subtitle2" color="text.secondary">
-            Location: {event.location || 'TBD'}
-          </Typography>
+          <Divider sx={{ my: 3 }} />
 
-          <Box sx={{ mt: 3 }}>
+          <Stack spacing={1.5} sx={{ mb: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, color: 'text.secondary' }}>
+              <CalendarToday fontSize="small" />
+              <Typography>{event.date ? new Date(event.date).toLocaleString() : 'Date TBD'}</Typography>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, color: 'text.secondary' }}>
+              <LocationOn fontSize="small" />
+              <Typography>{event.location || 'Location TBD'}</Typography>
+            </Box>
+          </Stack>
+
+          <Box>
             {user ? (
               isRegistered ? (
-                <Button variant="outlined" color="secondary" onClick={handleUnregister}>Unregister</Button>
+                <Button variant="outlined" color="error" size="large" onClick={handleUnregister}>Unregister</Button>
               ) : (
-                <Button variant="contained" color="primary" onClick={handleRegister}>Register</Button>
+                <Button variant="contained" color="primary" size="large" onClick={handleRegister}>Register</Button>
               )
             ) : (
-              <Button variant="contained" color="primary" onClick={() => navigate('/login')}>Login to Register</Button>
+              <Button variant="contained" color="primary" size="large" onClick={() => navigate('/login')}>Login to Register</Button>
             )}
           </Box>
         </CardContent>

@@ -9,9 +9,21 @@ import {
   Button,
   Box,
   TextField,
-  Chip
+  Chip,
+  Paper,
+  Stack,
+  CircularProgress,
+  InputAdornment,
+  Avatar,
 } from '@mui/material';
-import { Event as EventIcon, LocationOn, CalendarToday } from '@mui/icons-material';
+import {
+  Event as EventIcon,
+  LocationOn,
+  CalendarToday,
+  Search as SearchIcon,
+  People as PeopleIcon,
+  ArrowForward as ArrowForwardIcon,
+} from '@mui/icons-material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -61,24 +73,53 @@ const Events = () => {
 
   if (loading) {
     return (
-      <Container>
-        <Typography>Loading...</Typography>
-      </Container>
+      <Box sx={{ display: 'flex', justifyContent: 'center', py: 12 }}>
+        <CircularProgress />
+      </Box>
     );
   }
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Typography variant="h4" component="h1" gutterBottom>
-        Events
-      </Typography>
+      {/* Page header */}
+      <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 1 }}>
+        <Avatar sx={{ bgcolor: 'primary.main', width: 48, height: 48 }}>
+          <EventIcon />
+        </Avatar>
+        <Box>
+          <Typography variant="h4" component="h1">
+            Events
+          </Typography>
+          <Typography color="text.secondary">
+            Discover workshops, meetups, and opportunities near you
+          </Typography>
+        </Box>
+      </Stack>
 
       {/* Filters */}
-      <Box sx={{ mb: 4 }}>
+      <Paper elevation={0} sx={{ p: 2, mb: 4, mt: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
+              size="small"
+              label="Search"
+              name="search"
+              value={filters.search}
+              onChange={handleFilterChange}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon fontSize="small" />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              fullWidth
+              size="small"
               label="Tag"
               name="type"
               value={filters.type}
@@ -88,79 +129,84 @@ const Events = () => {
           <Grid item xs={12} sm={4}>
             <TextField
               fullWidth
+              size="small"
               label="Location"
               name="location"
               value={filters.location}
               onChange={handleFilterChange}
             />
           </Grid>
-          <Grid item xs={12} sm={4}>
-            <TextField
-              fullWidth
-              label="Search"
-              name="search"
-              value={filters.search}
-              onChange={handleFilterChange}
-            />
-          </Grid>
         </Grid>
-      </Box>
+      </Paper>
 
       {/* Events Grid */}
-      <Grid container spacing={4}>
-        {filteredEvents.map((event) => (
-          <Grid item xs={12} sm={6} md={4} key={event._id}>
-            <Card>
-              <CardContent>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <EventIcon color="primary" sx={{ mr: 1 }} />
-                  <Typography variant="h6" component="h2">
-                    {event.title}
+      {filteredEvents.length === 0 ? (
+        <Box sx={{ textAlign: 'center', py: 8, color: 'text.secondary' }}>
+          <EventIcon sx={{ fontSize: 56, opacity: 0.4, mb: 1 }} />
+          <Typography>No events match your filters.</Typography>
+        </Box>
+      ) : (
+        <Grid container spacing={4}>
+          {filteredEvents.map((event) => (
+            <Grid item xs={12} sm={6} md={4} key={event._id}>
+              <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                <CardContent sx={{ flexGrow: 1 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 1.5 }}>
+                    <Avatar sx={{ bgcolor: 'rgba(79,70,229,0.1)', color: 'primary.main' }}>
+                      <EventIcon />
+                    </Avatar>
+                    <Typography variant="h6" component="h2">
+                      {event.title}
+                    </Typography>
+                  </Box>
+
+                  <Typography variant="body2" color="text.secondary" paragraph>
+                    {event.description}
                   </Typography>
-                </Box>
 
-                <Typography variant="body2" color="text.secondary" paragraph>
-                  {event.description}
-                </Typography>
+                  <Stack spacing={1} sx={{ mb: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', color: 'text.secondary' }}>
+                      <CalendarToday fontSize="small" sx={{ mr: 1 }} />
+                      <Typography variant="body2">
+                        {event.date ? new Date(event.date).toLocaleDateString() : 'Date TBD'}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', color: 'text.secondary' }}>
+                      <LocationOn fontSize="small" sx={{ mr: 1 }} />
+                      <Typography variant="body2">
+                        {event.location || 'Location TBD'}
+                      </Typography>
+                    </Box>
+                  </Stack>
 
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                  <CalendarToday fontSize="small" sx={{ mr: 1 }} />
-                  <Typography variant="body2">
-                    {event.date ? new Date(event.date).toLocaleDateString() : 'Date TBD'}
-                  </Typography>
-                </Box>
-
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                  <LocationOn fontSize="small" sx={{ mr: 1 }} />
-                  <Typography variant="body2">
-                    {event.location || 'Location TBD'}
-                  </Typography>
-                </Box>
-
-                <Box sx={{ mb: 2 }}>
-                  {(event.tags || []).map((tag, i) => (
-                    <Chip key={i} label={tag} size="small" sx={{ mr: 1, mb: 0.5 }} />
-                  ))}
-                  <Chip
-                    label={`${event.attendees?.length || 0} attendees`}
+                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                    {(event.tags || []).map((tag, i) => (
+                      <Chip key={i} label={tag} size="small" color="primary" variant="outlined" />
+                    ))}
+                    <Chip
+                      icon={<PeopleIcon />}
+                      label={`${event.attendees?.length || 0}`}
+                      size="small"
+                    />
+                  </Box>
+                </CardContent>
+                <CardActions sx={{ px: 2, pb: 2 }}>
+                  <Button
+                    variant="contained"
                     size="small"
-                  />
-                </Box>
-              </CardContent>
-              <CardActions>
-                <Button size="small" color="primary" onClick={() => navigate(`/events/${event._id}`)}>
-                  Learn More
-                </Button>
-                <Button size="small" color="primary" onClick={() => navigate(`/events/${event._id}`)}>
-                  Register
-                </Button>
-              </CardActions>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+                    endIcon={<ArrowForwardIcon />}
+                    onClick={() => navigate(`/events/${event._id}`)}
+                  >
+                    View & Register
+                  </Button>
+                </CardActions>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      )}
     </Container>
   );
 };
 
-export default Events; 
+export default Events;

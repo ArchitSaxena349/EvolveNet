@@ -14,9 +14,15 @@ import {
     TextField,
     Box,
     Avatar,
-    Chip
+    Chip,
+    Stack
 } from '@mui/material';
-import { Add as AddIcon, Group as GroupIcon } from '@mui/icons-material';
+import {
+    Add as AddIcon,
+    Group as GroupIcon,
+    People as PeopleIcon,
+    Groups as GroupsIcon,
+} from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -72,10 +78,20 @@ const Groups = () => {
 
     return (
         <Container maxWidth="lg" sx={{ py: 4 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-                <Typography variant="h4" component="h1">
-                    Groups
-                </Typography>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, gap: 2, flexWrap: 'wrap' }}>
+                <Stack direction="row" spacing={2} alignItems="center">
+                    <Avatar sx={{ bgcolor: 'primary.main', width: 48, height: 48 }}>
+                        <GroupsIcon />
+                    </Avatar>
+                    <Box>
+                        <Typography variant="h4" component="h1">
+                            Groups
+                        </Typography>
+                        <Typography color="text.secondary">
+                            Join communities and connect around shared interests
+                        </Typography>
+                    </Box>
+                </Stack>
                 <Button
                     variant="contained"
                     startIcon={<AddIcon />}
@@ -101,17 +117,20 @@ const Groups = () => {
                                 <Typography variant="body2" color="text.secondary" paragraph>
                                     {group.description}
                                 </Typography>
-                                <Box sx={{ mt: 1 }}>
+                                <Box sx={{ mt: 1, display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
                                     {group.tags && group.tags.map((tag, index) => (
-                                        <Chip key={index} label={tag} size="small" sx={{ mr: 0.5, mb: 0.5 }} />
+                                        <Chip key={index} label={tag} size="small" color="primary" variant="outlined" />
                                     ))}
                                 </Box>
-                                <Typography variant="caption" display="block" sx={{ mt: 2 }}>
-                                    {group.members?.length || 0} members
-                                </Typography>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 2, color: 'text.secondary' }}>
+                                    <PeopleIcon fontSize="small" />
+                                    <Typography variant="caption">
+                                        {group.members?.length || 0} members
+                                    </Typography>
+                                </Box>
                             </CardContent>
-                            <CardActions>
-                                <Button size="small" onClick={() => navigate(`/groups/${group._id}`)}>
+                            <CardActions sx={{ px: 2, pb: 2 }}>
+                                <Button size="small" variant="contained" onClick={() => navigate(`/groups/${group._id}`)}>
                                     View Group
                                 </Button>
                             </CardActions>
@@ -121,13 +140,14 @@ const Groups = () => {
             </Grid>
 
             {groups.length === 0 && (
-                <Typography variant="body1" sx={{ mt: 4, textAlign: 'center' }}>
-                    No groups found. Create one to get started!
-                </Typography>
+                <Box sx={{ textAlign: 'center', py: 8, color: 'text.secondary' }}>
+                    <GroupsIcon sx={{ fontSize: 56, opacity: 0.4, mb: 1 }} />
+                    <Typography>No groups found. Create one to get started!</Typography>
+                </Box>
             )}
 
             {/* Create Group Dialog */}
-            <Dialog open={open} onClose={() => setOpen(false)}>
+            <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="sm">
                 <DialogTitle>Create New Group</DialogTitle>
                 <DialogContent>
                     <form onSubmit={handleSubmit} id="create-group-form">

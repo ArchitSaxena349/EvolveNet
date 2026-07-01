@@ -11,20 +11,36 @@ import {
   Avatar,
   Tabs,
   Tab,
-  Divider,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  Chip
+  Chip,
+  Stack,
+  Paper,
+  CircularProgress,
+  FormControlLabel,
+  Checkbox,
 } from '@mui/material';
 import {
   Edit as EditIcon,
   LocationOn as LocationIcon,
-  Add as AddIcon
+  Add as AddIcon,
+  Work as WorkIcon,
+  School as SchoolIcon,
+  EmojiEvents as SkillsIcon,
+  People as PeopleIcon,
+  Email as EmailIcon,
 } from '@mui/icons-material';
 import { AuthContext } from '../context/AuthContext';
 import axios from 'axios';
+
+const EmptyState = ({ icon, text }) => (
+  <Box sx={{ textAlign: 'center', py: 5, color: 'text.secondary' }}>
+    <Box sx={{ opacity: 0.4, mb: 1, '& svg': { fontSize: 48 } }}>{icon}</Box>
+    <Typography color="text.secondary">{text}</Typography>
+  </Box>
+);
 
 const Profile = () => {
   const { user } = useContext(AuthContext);
@@ -198,52 +214,110 @@ const Profile = () => {
     }
   };
 
-    if (!profile) {
+  if (!profile) {
     return (
-      <Container>
-        <Typography>Loading...</Typography>
-      </Container>
+      <Box sx={{ display: 'flex', justifyContent: 'center', py: 12 }}>
+        <CircularProgress />
+      </Box>
     );
   }
+
+  const experience = profile.profile?.experience || [];
+  const education = profile.profile?.education || [];
+  const skills = profile.profile?.skills || [];
+  const connections = profile.connections || [];
+  const initial = (profile.name || 'U').trim().charAt(0).toUpperCase();
+
+  const formatDate = (d) => (d ? new Date(d).toLocaleDateString(undefined, { month: 'short', year: 'numeric' }) : '');
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Grid container spacing={4}>
         {/* Profile Header */}
         <Grid item xs={12}>
-          <Card>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+          <Card sx={{ overflow: 'hidden', '&:hover': { transform: 'none' } }}>
+            {/* Cover banner */}
+            <Box
+              sx={{
+                height: 140,
+                backgroundImage:
+                  'linear-gradient(135deg, #4f46e5 0%, #6d28d9 55%, #06b6d4 130%)',
+              }}
+            />
+            <CardContent sx={{ pt: 0 }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: { xs: 'column', sm: 'row' },
+                  alignItems: { xs: 'flex-start', sm: 'flex-end' },
+                  gap: 2,
+                  mt: '-56px',
+                  mb: 3,
+                }}
+              >
                 <Avatar
                   src={profile.profile?.picture}
-                  sx={{ width: 100, height: 100, mr: 3 }}
-                />
-                <Box>
+                  sx={{
+                    width: 112,
+                    height: 112,
+                    border: '4px solid',
+                    borderColor: 'background.paper',
+                    bgcolor: 'secondary.main',
+                    fontSize: '2.5rem',
+                    fontWeight: 700,
+                    boxShadow: 2,
+                  }}
+                >
+                  {initial}
+                </Avatar>
+                <Box sx={{ flexGrow: 1, pb: 0.5 }}>
                   <Typography variant="h4" component="h1">
                     {profile.name}
                   </Typography>
-                  <Typography variant="subtitle1" color="text.secondary">
-                    {profile.email}
-                  </Typography>
-                  <Button
-                    startIcon={<EditIcon />}
-                    onClick={() => setEditing(!editing)}
-                    sx={{ mt: 1 }}
+                  <Stack
+                    direction="row"
+                    spacing={2}
+                    sx={{ mt: 0.5, color: 'text.secondary', flexWrap: 'wrap' }}
                   >
-                    {editing ? 'Cancel' : 'Edit Profile'}
-                  </Button>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <EmailIcon fontSize="small" />
+                      <Typography variant="body2">{profile.email}</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <LocationIcon fontSize="small" />
+                      <Typography variant="body2">
+                        {profile.profile?.location || 'Location not specified'}
+                      </Typography>
+                    </Box>
+                  </Stack>
                 </Box>
+                <Button
+                  variant={editing ? 'outlined' : 'contained'}
+                  startIcon={<EditIcon />}
+                  onClick={() => setEditing(!editing)}
+                >
+                  {editing ? 'Cancel' : 'Edit Profile'}
+                </Button>
               </Box>
 
               {editing ? (
-                <form onSubmit={handleSubmit}>
+                <Box component="form" onSubmit={handleSubmit}>
                   <Grid container spacing={2}>
-                    <Grid item xs={12}>
+                    <Grid item xs={12} sm={6}>
                       <TextField
                         fullWidth
                         label="Name"
                         name="name"
                         value={formData.name}
+                        onChange={handleChange}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <TextField
+                        fullWidth
+                        label="Location"
+                        name="location"
+                        value={formData.location}
                         onChange={handleChange}
                       />
                     </Grid>
@@ -259,36 +333,22 @@ const Profile = () => {
                       />
                     </Grid>
                     <Grid item xs={12}>
-                      <TextField
-                        fullWidth
-                        label="Location"
-                        name="location"
-                        value={formData.location}
-                        onChange={handleChange}
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <Button
-                        type="submit"
-                        variant="contained"
-                        color="primary"
-                      >
+                      <Button type="submit" variant="contained" color="primary">
                         Save Changes
                       </Button>
                     </Grid>
                   </Grid>
-                </form>
+                </Box>
               ) : (
                 <>
-                  <Typography paragraph>
-                    {profile.profile?.bio || 'No bio available'}
+                  <Typography color={profile.profile?.bio ? 'text.primary' : 'text.secondary'}>
+                    {profile.profile?.bio || 'No bio available yet. Click “Edit Profile” to add one.'}
                   </Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <LocationIcon sx={{ mr: 1 }} />
-                    <Typography>
-                      {profile.profile?.location || 'Location not specified'}
-                    </Typography>
-                  </Box>
+                  <Stack direction="row" spacing={1.5} sx={{ mt: 2.5 }}>
+                    <Chip icon={<WorkIcon />} label={`${experience.length} Experience`} variant="outlined" />
+                    <Chip icon={<SkillsIcon />} label={`${skills.length} Skills`} variant="outlined" />
+                    <Chip icon={<PeopleIcon />} label={`${connections.length} Connections`} variant="outlined" />
+                  </Stack>
                 </>
               )}
             </CardContent>
@@ -297,122 +357,164 @@ const Profile = () => {
 
         {/* Profile Content */}
         <Grid item xs={12}>
-          <Card>
+          <Card sx={{ '&:hover': { transform: 'none' } }}>
             <Tabs
               value={tabValue}
               onChange={handleTabChange}
-              sx={{ borderBottom: 1, borderColor: 'divider' }}
+              variant="scrollable"
+              scrollButtons="auto"
+              sx={{ borderBottom: 1, borderColor: 'divider', px: 1 }}
             >
-              <Tab label="Experience" />
-              <Tab label="Education" />
-              <Tab label="Skills" />
-              <Tab label="Connections" />
+              <Tab icon={<WorkIcon />} iconPosition="start" label="Experience" />
+              <Tab icon={<SchoolIcon />} iconPosition="start" label="Education" />
+              <Tab icon={<SkillsIcon />} iconPosition="start" label="Skills" />
+              <Tab icon={<PeopleIcon />} iconPosition="start" label="Connections" />
             </Tabs>
 
-            <CardContent>
+            <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
               {tabValue === 0 && (
                 <Box>
                   <Button
+                    variant="outlined"
                     startIcon={<AddIcon />}
                     onClick={() => setOpenExperience(true)}
                     sx={{ mb: 2 }}
                   >
                     Add Experience
                   </Button>
-                  {profile.profile?.experience?.map((exp, index) => (
-                    <Box key={index} sx={{ mb: 3 }}>
-                      <Typography variant="h6">{exp.title}</Typography>
-                      <Typography color="text.secondary">
-                        {exp.company} • {exp.location}
-                      </Typography>
-                      <Typography variant="body2">
-                        {new Date(exp.from).toLocaleDateString()} -{' '}
-                        {exp.current ? 'Present' : new Date(exp.to).toLocaleDateString()}
-                      </Typography>
-                      <Typography paragraph>{exp.description}</Typography>
-                      {index < profile.profile.experience.length - 1 && <Divider />}
-                    </Box>
-                  ))}
+                  {experience.length === 0 ? (
+                    <EmptyState icon={<WorkIcon />} text="No experience added yet." />
+                  ) : (
+                    <Stack spacing={2}>
+                      {experience.map((exp, index) => (
+                        <Paper key={index} variant="outlined" sx={{ p: 2.5, borderRadius: 3 }}>
+                          <Box sx={{ display: 'flex', gap: 2 }}>
+                            <Avatar sx={{ bgcolor: 'rgba(79,70,229,0.1)', color: 'primary.main' }}>
+                              <WorkIcon />
+                            </Avatar>
+                            <Box>
+                              <Typography variant="h6">{exp.title}</Typography>
+                              <Typography color="text.secondary">
+                                {exp.company}
+                                {exp.location ? ` • ${exp.location}` : ''}
+                              </Typography>
+                              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                                {formatDate(exp.from)} — {exp.current ? 'Present' : formatDate(exp.to)}
+                              </Typography>
+                              {exp.description && (
+                                <Typography sx={{ mt: 1 }}>{exp.description}</Typography>
+                              )}
+                            </Box>
+                          </Box>
+                        </Paper>
+                      ))}
+                    </Stack>
+                  )}
                 </Box>
               )}
 
               {tabValue === 1 && (
                 <Box>
                   <Button
+                    variant="outlined"
                     startIcon={<AddIcon />}
                     onClick={() => setOpenEducation(true)}
                     sx={{ mb: 2 }}
                   >
                     Add Education
                   </Button>
-                  {profile.profile?.education?.map((edu, index) => (
-                    <Box key={index} sx={{ mb: 3 }}>
-                      <Typography variant="h6">{edu.school}</Typography>
-                      <Typography color="text.secondary">
-                        {edu.degree} in {edu.fieldofstudy}
-                      </Typography>
-                      <Typography variant="body2">
-                        {new Date(edu.from).toLocaleDateString()} -{' '}
-                        {edu.current ? 'Present' : new Date(edu.to).toLocaleDateString()}
-                      </Typography>
-                      <Typography paragraph>{edu.description}</Typography>
-                      {index < profile.profile.education.length - 1 && <Divider />}
-                    </Box>
-                  ))}
+                  {education.length === 0 ? (
+                    <EmptyState icon={<SchoolIcon />} text="No education added yet." />
+                  ) : (
+                    <Stack spacing={2}>
+                      {education.map((edu, index) => (
+                        <Paper key={index} variant="outlined" sx={{ p: 2.5, borderRadius: 3 }}>
+                          <Box sx={{ display: 'flex', gap: 2 }}>
+                            <Avatar sx={{ bgcolor: 'rgba(6,182,212,0.12)', color: 'secondary.dark' }}>
+                              <SchoolIcon />
+                            </Avatar>
+                            <Box>
+                              <Typography variant="h6">{edu.school}</Typography>
+                              <Typography color="text.secondary">
+                                {edu.degree}
+                                {edu.fieldofstudy ? ` in ${edu.fieldofstudy}` : ''}
+                              </Typography>
+                              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                                {formatDate(edu.from)} — {edu.current ? 'Present' : formatDate(edu.to)}
+                              </Typography>
+                              {edu.description && (
+                                <Typography sx={{ mt: 1 }}>{edu.description}</Typography>
+                              )}
+                            </Box>
+                          </Box>
+                        </Paper>
+                      ))}
+                    </Stack>
+                  )}
                 </Box>
               )}
 
               {tabValue === 2 && (
                 <Box>
                   <Button
+                    variant="outlined"
                     startIcon={<AddIcon />}
                     onClick={() => setOpenSkill(true)}
                     sx={{ mb: 2 }}
                   >
                     Add Skill
                   </Button>
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                    {profile.profile?.skills?.map((skill, index) => (
-                      <Chip
-                        key={index}
-                        label={skill}
-                        onDelete={() => handleDeleteSkill(skill)}
-                        sx={{ m: 0.5 }}
-                      />
-                    ))}
-                  </Box>
+                  {skills.length === 0 ? (
+                    <EmptyState icon={<SkillsIcon />} text="No skills added yet." />
+                  ) : (
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                      {skills.map((skill, index) => (
+                        <Chip
+                          key={index}
+                          label={skill}
+                          color="primary"
+                          variant="outlined"
+                          onDelete={() => handleDeleteSkill(skill)}
+                        />
+                      ))}
+                    </Box>
+                  )}
                 </Box>
               )}
 
               {tabValue === 3 && (
                 <Box>
                   <Typography variant="h6" gutterBottom>
-                    {profile.connections?.length || 0} Connections
+                    {connections.length} Connections
                   </Typography>
-                  <Grid container spacing={2}>
-                    {profile.connections?.map((connection) => (
-                      <Grid item xs={12} sm={6} md={4} key={connection._id}>
-                        <Card>
-                          <CardContent>
-                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  {connections.length === 0 ? (
+                    <EmptyState icon={<PeopleIcon />} text="No connections yet." />
+                  ) : (
+                    <Grid container spacing={2}>
+                      {connections.map((connection) => (
+                        <Grid item xs={12} sm={6} md={4} key={connection._id}>
+                          <Paper variant="outlined" sx={{ p: 2, borderRadius: 3 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                               <Avatar
                                 src={connection.profile?.picture}
-                                sx={{ mr: 2 }}
-                              />
-                              <Box>
-                                <Typography variant="subtitle1">
+                                sx={{ bgcolor: 'primary.main' }}
+                              >
+                                {(connection.name || 'U').trim().charAt(0).toUpperCase()}
+                              </Avatar>
+                              <Box sx={{ minWidth: 0 }}>
+                                <Typography variant="subtitle1" noWrap>
                                   {connection.name}
                                 </Typography>
-                                <Typography variant="body2" color="text.secondary">
+                                <Typography variant="body2" color="text.secondary" noWrap>
                                   {connection.profile?.title || 'No title'}
                                 </Typography>
                               </Box>
                             </Box>
-                          </CardContent>
-                        </Card>
-                      </Grid>
-                    ))}
-                  </Grid>
+                          </Paper>
+                        </Grid>
+                      ))}
+                    </Grid>
+                  )}
                 </Box>
               )}
             </CardContent>
@@ -421,7 +523,7 @@ const Profile = () => {
       </Grid>
 
       {/* Experience Dialog */}
-      <Dialog open={openExperience} onClose={() => setOpenExperience(false)}>
+      <Dialog open={openExperience} onClose={() => setOpenExperience(false)} fullWidth maxWidth="sm">
         <DialogTitle>Add Experience</DialogTitle>
         <DialogContent>
           <form onSubmit={handleAddExperience}>
@@ -473,14 +575,15 @@ const Profile = () => {
               disabled={experienceForm.current}
               InputLabelProps={{ shrink: true }}
             />
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <input
-                type="checkbox"
-                checked={experienceForm.current}
-                onChange={(e) => setExperienceForm({ ...experienceForm, current: e.target.checked })}
-              />
-              <Typography sx={{ ml: 1 }}>Current Job</Typography>
-            </Box>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={experienceForm.current}
+                  onChange={(e) => setExperienceForm({ ...experienceForm, current: e.target.checked })}
+                />
+              }
+              label="Current Job"
+            />
             <TextField
               fullWidth
               label="Description"
@@ -500,7 +603,7 @@ const Profile = () => {
       </Dialog>
 
       {/* Education Dialog */}
-      <Dialog open={openEducation} onClose={() => setOpenEducation(false)}>
+      <Dialog open={openEducation} onClose={() => setOpenEducation(false)} fullWidth maxWidth="sm">
         <DialogTitle>Add Education</DialogTitle>
         <DialogContent>
           <form onSubmit={handleAddEducation}>
@@ -553,14 +656,15 @@ const Profile = () => {
               disabled={educationForm.current}
               InputLabelProps={{ shrink: true }}
             />
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <input
-                type="checkbox"
-                checked={educationForm.current}
-                onChange={(e) => setEducationForm({ ...educationForm, current: e.target.checked })}
-              />
-              <Typography sx={{ ml: 1 }}>Currently Studying</Typography>
-            </Box>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={educationForm.current}
+                  onChange={(e) => setEducationForm({ ...educationForm, current: e.target.checked })}
+                />
+              }
+              label="Currently Studying"
+            />
             <TextField
               fullWidth
               label="Description"
@@ -580,7 +684,7 @@ const Profile = () => {
       </Dialog>
 
       {/* Skill Dialog */}
-      <Dialog open={openSkill} onClose={() => setOpenSkill(false)}>
+      <Dialog open={openSkill} onClose={() => setOpenSkill(false)} fullWidth maxWidth="xs">
         <DialogTitle>Add Skill</DialogTitle>
         <DialogContent>
           <form onSubmit={handleAddSkill}>
@@ -603,4 +707,4 @@ const Profile = () => {
   );
 };
 
-export default Profile; 
+export default Profile;

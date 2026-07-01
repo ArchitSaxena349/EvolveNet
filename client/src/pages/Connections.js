@@ -12,10 +12,25 @@ import {
     Tabs,
     Tab,
     Chip,
-    TextField
+    TextField,
+    Stack,
+    InputAdornment,
 } from '@mui/material';
+import {
+    People as PeopleIcon,
+    Search as SearchIcon,
+    PersonAdd as PersonAddIcon,
+    Hub as HubIcon,
+} from '@mui/icons-material';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
+
+const EmptyState = ({ icon, text }) => (
+    <Box sx={{ textAlign: 'center', py: 6, width: '100%', color: 'text.secondary' }}>
+        <Box sx={{ opacity: 0.4, mb: 1, '& svg': { fontSize: 48 } }}>{icon}</Box>
+        <Typography color="text.secondary">{text}</Typography>
+    </Box>
+);
 
 const Connections = () => {
     const [tabValue, setTabValue] = useState(0);
@@ -116,13 +131,30 @@ const Connections = () => {
         );
     });
 
+    const initialOf = (name) => (name || 'U').trim().charAt(0).toUpperCase();
+
     return (
         <Container maxWidth="lg" sx={{ py: 4 }}>
-            <Typography variant="h4" component="h1" gutterBottom>
-                Network
-            </Typography>
+            {/* Page header */}
+            <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 3 }}>
+                <Avatar sx={{ bgcolor: 'primary.main', width: 48, height: 48 }}>
+                    <HubIcon />
+                </Avatar>
+                <Box>
+                    <Typography variant="h4" component="h1">
+                        Network
+                    </Typography>
+                    <Typography color="text.secondary">
+                        Manage your connections and discover new people
+                    </Typography>
+                </Box>
+            </Stack>
 
-            <Tabs value={tabValue} onChange={(e, v) => setTabValue(v)} sx={{ mb: 3 }}>
+            <Tabs
+                value={tabValue}
+                onChange={(e, v) => setTabValue(v)}
+                sx={{ mb: 3, borderBottom: 1, borderColor: 'divider' }}
+            >
                 <Tab label={`My Connections (${connections.length})`} />
                 <Tab label={`Requests (${requests.length})`} />
                 <Tab label="Find Alumni" />
@@ -136,15 +168,17 @@ const Connections = () => {
                         if (!otherUser) return null;
                         return (
                             <Grid item xs={12} sm={6} md={4} key={conn._id}>
-                                <Card>
-                                    <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
-                                        <Avatar src={otherUser.profile?.picture} sx={{ mr: 2 }}>{otherUser.name?.[0] || '?'}</Avatar>
-                                        <Box>
-                                            <Typography variant="h6">{otherUser.name}</Typography>
-                                            <Typography variant="body2" color="text.secondary">{otherUser.email}</Typography>
+                                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                                    <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2, flexGrow: 1 }}>
+                                        <Avatar src={otherUser.profile?.picture} sx={{ bgcolor: 'primary.main', width: 52, height: 52 }}>
+                                            {initialOf(otherUser.name)}
+                                        </Avatar>
+                                        <Box sx={{ minWidth: 0 }}>
+                                            <Typography variant="h6" noWrap>{otherUser.name}</Typography>
+                                            <Typography variant="body2" color="text.secondary" noWrap>{otherUser.email}</Typography>
                                         </Box>
                                     </CardContent>
-                                    <CardActions>
+                                    <CardActions sx={{ px: 2, pb: 2 }}>
                                         <Button size="small" color="error" onClick={() => handleRemove(conn._id)}>
                                             Remove
                                         </Button>
@@ -153,7 +187,7 @@ const Connections = () => {
                             </Grid>
                         );
                     })}
-                    {connections.length === 0 && <Typography sx={{ mt: 2, ml: 2 }}>No connections yet.</Typography>}
+                    {connections.length === 0 && <EmptyState icon={<PeopleIcon />} text="No connections yet. Find alumni to get started." />}
                 </Grid>
             )}
 
@@ -162,17 +196,19 @@ const Connections = () => {
                 <Grid container spacing={3}>
                     {requests.map((req) => (
                         <Grid item xs={12} sm={6} md={4} key={req._id}>
-                            <Card>
-                                <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
-                                    <Avatar src={req.user.profile?.picture} sx={{ mr: 2 }}>{req.user.name?.[0] || '?'}</Avatar>
-                                    <Box>
-                                        <Typography variant="h6">{req.user.name}</Typography>
+                            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                                <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2, flexGrow: 1 }}>
+                                    <Avatar src={req.user.profile?.picture} sx={{ bgcolor: 'secondary.main', width: 52, height: 52 }}>
+                                        {initialOf(req.user.name)}
+                                    </Avatar>
+                                    <Box sx={{ minWidth: 0 }}>
+                                        <Typography variant="h6" noWrap>{req.user.name}</Typography>
                                         <Typography variant="body2" color="text.secondary">
                                             Wants to connect
                                         </Typography>
                                     </Box>
                                 </CardContent>
-                                <CardActions>
+                                <CardActions sx={{ px: 2, pb: 2 }}>
                                     <Button size="small" variant="contained" onClick={() => handleAccept(req._id)}>
                                         Accept
                                     </Button>
@@ -183,7 +219,7 @@ const Connections = () => {
                             </Card>
                         </Grid>
                     ))}
-                    {requests.length === 0 && <Typography sx={{ mt: 2, ml: 2 }}>No pending requests.</Typography>}
+                    {requests.length === 0 && <EmptyState icon={<PersonAddIcon />} text="No pending requests." />}
                 </Grid>
             )}
 
@@ -197,21 +233,30 @@ const Connections = () => {
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         sx={{ mb: 3 }}
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <SearchIcon />
+                                </InputAdornment>
+                            ),
+                        }}
                     />
                     <Grid container spacing={3}>
                         {filteredUsers.map((u) => (
                             <Grid item xs={12} sm={6} md={4} key={u._id}>
-                                <Card>
-                                    <CardContent sx={{ display: 'flex', alignItems: 'center' }}>
-                                        <Avatar src={u.profile?.picture} sx={{ mr: 2 }}>{u.name?.[0] || '?'}</Avatar>
-                                        <Box>
-                                            <Typography variant="h6">{u.name}</Typography>
-                                            <Typography variant="body2" color="text.secondary">{u.email}</Typography>
-                                            {u.role && <Chip label={u.role} size="small" sx={{ mt: 0.5 }} />}
+                                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                                    <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2, flexGrow: 1 }}>
+                                        <Avatar src={u.profile?.picture} sx={{ bgcolor: 'primary.main', width: 52, height: 52 }}>
+                                            {initialOf(u.name)}
+                                        </Avatar>
+                                        <Box sx={{ minWidth: 0 }}>
+                                            <Typography variant="h6" noWrap>{u.name}</Typography>
+                                            <Typography variant="body2" color="text.secondary" noWrap>{u.email}</Typography>
+                                            {u.role && <Chip label={u.role} size="small" color="secondary" variant="outlined" sx={{ mt: 0.5 }} />}
                                         </Box>
                                     </CardContent>
-                                    <CardActions>
-                                        <Button size="small" variant="outlined" onClick={() => handleConnect(u._id)}>
+                                    <CardActions sx={{ px: 2, pb: 2 }}>
+                                        <Button size="small" variant="contained" startIcon={<PersonAddIcon />} onClick={() => handleConnect(u._id)}>
                                             Connect
                                         </Button>
                                     </CardActions>
@@ -219,9 +264,7 @@ const Connections = () => {
                             </Grid>
                         ))}
                         {filteredUsers.length === 0 && (
-                            <Typography sx={{ mt: 2, ml: 2, width: '100%', textAlign: 'center' }}>
-                                No alumni found matching "{searchTerm}"
-                            </Typography>
+                            <EmptyState icon={<SearchIcon />} text={searchTerm ? `No alumni found matching "${searchTerm}"` : 'No alumni to show.'} />
                         )}
                     </Grid>
                 </Box>
