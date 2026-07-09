@@ -21,11 +21,13 @@ router.post(
   '/',
   [
     auth,
-    [
-      check('name', 'Name is required').not().isEmpty(),
-      check('description', 'Description is required').not().isEmpty(),
-      check('tags', 'Tags are required').not().isEmpty()
-    ]
+    check('name', 'Name is required').trim().notEmpty(),
+    check('name', 'Name must be between 2 and 100 characters').isLength({ min: 2, max: 100 }),
+    check('description', 'Description is required').trim().notEmpty(),
+    check('description', 'Description must be between 10 and 2000 characters').isLength({ min: 10, max: 2000 }),
+    check('tags', 'Tags are required').isArray({ min: 1 }),
+    check('tags.*', 'Each tag must be a non-empty string').trim().notEmpty(),
+    check('isPrivate', 'isPrivate must be a boolean').optional().isBoolean()
   ],
   groupController.createGroup
 );
@@ -37,11 +39,13 @@ router.put(
   '/:id',
   [
     auth,
-    [
-      check('name', 'Name is required').not().isEmpty(),
-      check('description', 'Description is required').not().isEmpty(),
-      check('tags', 'Tags are required').not().isEmpty()
-    ]
+    check('name', 'Name is required').trim().notEmpty(),
+    check('name', 'Name must be between 2 and 100 characters').isLength({ min: 2, max: 100 }),
+    check('description', 'Description is required').trim().notEmpty(),
+    check('description', 'Description must be between 10 and 2000 characters').isLength({ min: 10, max: 2000 }),
+    check('tags', 'Tags are required').isArray({ min: 1 }),
+    check('tags.*', 'Each tag must be a non-empty string').trim().notEmpty(),
+    check('isPrivate', 'isPrivate must be a boolean').optional().isBoolean()
   ],
   groupController.updateGroup
 );

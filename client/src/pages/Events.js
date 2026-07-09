@@ -23,6 +23,7 @@ import {
   Search as SearchIcon,
   People as PeopleIcon,
   ArrowForward as ArrowForwardIcon,
+  Add as AddIcon,
 } from '@mui/icons-material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -95,6 +96,12 @@ const Events = () => {
           </Typography>
         </Box>
       </Stack>
+
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 3 }}>
+        <Button variant="contained" startIcon={<AddIcon />} onClick={() => navigate('/events/create')}>
+          Create Event
+        </Button>
+      </Box>
 
       {/* Filters */}
       <Paper elevation={0} sx={{ p: 2, mb: 4, mt: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>

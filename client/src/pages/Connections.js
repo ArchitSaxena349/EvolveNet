@@ -15,12 +15,15 @@ import {
     TextField,
     Stack,
     InputAdornment,
+    Snackbar,
+    Alert,
 } from '@mui/material';
 import {
     People as PeopleIcon,
     Search as SearchIcon,
     PersonAdd as PersonAddIcon,
     Hub as HubIcon,
+    DeleteOutline as DeleteOutlineIcon,
 } from '@mui/icons-material';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
@@ -37,6 +40,7 @@ const Connections = () => {
     const [connections, setConnections] = useState([]);
     const [requests, setRequests] = useState([]);
     const [allUsers, setAllUsers] = useState([]);
+    const [snack, setSnack] = useState({ open: false, message: '', severity: 'info' });
     const { user } = useContext(AuthContext);
 
     useEffect(() => {
@@ -111,8 +115,14 @@ const Connections = () => {
             try {
                 await axios.delete(`/api/connections/${id}`);
                 fetchConnections();
+                setSnack({ open: true, message: 'Connection removed', severity: 'success' });
             } catch (err) {
                 console.error(err);
+                setSnack({
+                    open: true,
+                    message: err.response?.data?.error || 'Error removing connection',
+                    severity: 'error'
+                });
             }
         }
     };
@@ -179,7 +189,7 @@ const Connections = () => {
                                         </Box>
                                     </CardContent>
                                     <CardActions sx={{ px: 2, pb: 2 }}>
-                                        <Button size="small" color="error" onClick={() => handleRemove(conn._id)}>
+                                        <Button size="small" color="error" startIcon={<DeleteOutlineIcon />} onClick={() => handleRemove(conn._id)}>
                                             Remove
                                         </Button>
                                     </CardActions>
@@ -269,6 +279,20 @@ const Connections = () => {
                     </Grid>
                 </Box>
             )}
+
+            <Snackbar
+                open={snack.open}
+                autoHideDuration={3000}
+                onClose={() => setSnack((current) => ({ ...current, open: false }))}
+            >
+                <Alert
+                    onClose={() => setSnack((current) => ({ ...current, open: false }))}
+                    severity={snack.severity}
+                    sx={{ width: '100%' }}
+                >
+                    {snack.message}
+                </Alert>
+            </Snackbar>
         </Container>
     );
 };

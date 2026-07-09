@@ -49,6 +49,11 @@ const getConnectionRequests = async (req, res) => {
 // @access  Private
 const sendConnectionRequest = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     // Check if user exists
     const user = await User.findById(req.params.userId);
     if (!user) {
@@ -86,6 +91,11 @@ const sendConnectionRequest = async (req, res) => {
 // @access  Private
 const acceptConnectionRequest = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     const connection = await Connection.findById(req.params.id);
     if (!connection) {
       return res.status(404).json({ error: 'Connection not found' });
@@ -112,6 +122,11 @@ const acceptConnectionRequest = async (req, res) => {
 // @access  Private
 const rejectConnectionRequest = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     const connection = await Connection.findById(req.params.id);
     if (!connection) {
       return res.status(404).json({ error: 'Connection not found' });
@@ -138,6 +153,11 @@ const rejectConnectionRequest = async (req, res) => {
 // @access  Private
 const removeConnection = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     const connection = await Connection.findById(req.params.id);
     if (!connection) {
       return res.status(404).json({ error: 'Connection not found' });

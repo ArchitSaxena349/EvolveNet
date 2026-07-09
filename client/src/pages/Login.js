@@ -19,6 +19,7 @@ const Login = () => {
     password: ''
   });
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -27,13 +28,37 @@ const Login = () => {
       ...formData,
       [e.target.name]: e.target.value
     });
+    setFieldErrors((current) => ({
+      ...current,
+      [e.target.name]: undefined
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    const nextFieldErrors = {};
+
+    if (!formData.email.trim()) {
+      nextFieldErrors.email = 'Email is required';
+    } else if (!/^\S+@\S+\.\S+$/.test(formData.email.trim())) {
+      nextFieldErrors.email = 'Enter a valid email address';
+    }
+
+    if (!formData.password) {
+      nextFieldErrors.password = 'Password is required';
+    } else if (formData.password.length < 6) {
+      nextFieldErrors.password = 'Password must be at least 6 characters';
+    }
+
+    if (Object.keys(nextFieldErrors).length > 0) {
+      setFieldErrors(nextFieldErrors);
+      return;
+    }
+
+    setFieldErrors({});
     try {
-      await login(formData.email, formData.password);
+      await login(formData.email.trim(), formData.password);
       navigate('/profile');
     } catch (err) {
       setError(err.response?.data?.error || err.response?.data?.message || 'Login failed');
@@ -81,6 +106,8 @@ const Login = () => {
               autoFocus
               value={formData.email}
               onChange={handleChange}
+              error={Boolean(fieldErrors.email)}
+              helperText={fieldErrors.email}
             />
             <TextField
               margin="normal"
@@ -93,7 +120,14 @@ const Login = () => {
               autoComplete="current-password"
               value={formData.password}
               onChange={handleChange}
+              error={Boolean(fieldErrors.password)}
+              helperText={fieldErrors.password}
             />
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}>
+              <Link component={RouterLink} to="/forgot-password" variant="body2" fontWeight={600}>
+                Forgot password?
+              </Link>
+            </Box>
             <Button
               type="submit"
               fullWidth

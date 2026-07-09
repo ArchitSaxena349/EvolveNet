@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useContext } from 'react';
 import {
     Container,
     Typography,
@@ -25,16 +26,21 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { AuthContext } from '../context/AuthContext';
 
 const Groups = () => {
     const [groups, setGroups] = useState([]);
     const [open, setOpen] = useState(false);
+    const [error, setError] = useState('');
+    const [fieldErrors, setFieldErrors] = useState({});
     const [formData, setFormData] = useState({
         name: '',
         description: '',
         tags: ''
     });
+    const { user } = useContext(AuthContext);
     const navigate = useNavigate();
+    const currentUserId = String(user?.id || user?._id || '');
 
     useEffect(() => {
         fetchGroups();
@@ -51,28 +57,69 @@ const Groups = () => {
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+        setFieldErrors((current) => ({ ...current, [e.target.name]: undefined }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
+
+        const nextFieldErrors = {};
+        const name = formData.name.trim();
+        const description = formData.description.trim();
+        const tags = formData.tags
+            .split(',')
+            .map((tag) => tag.trim())
+            .filter(Boolean);
+
+        if (!name) {
+            nextFieldErrors.name = 'Group name is required';
+        } else if (name.length < 2 || name.length > 100) {
+            nextFieldErrors.name = 'Group name must be 2 to 100 characters';
+        }
+
+        if (!description) {
+            nextFieldErrors.description = 'Description is required';
+        } else if (description.length < 10 || description.length > 2000) {
+            nextFieldErrors.description = 'Description must be 10 to 2000 characters';
+        }
+
+        if (tags.length === 0) {
+            nextFieldErrors.tags = 'Add at least one tag';
+        }
+
+        if (Object.keys(nextFieldErrors).length > 0) {
+            setFieldErrors(nextFieldErrors);
+            return;
+        }
+
+        setFieldErrors({});
         try {
-            // Tags might be comma separated string in backend, let's check model briefly if needed.
-            // Usually backend expects array or string. passing tags as string to let backend handle or split validly if needed.
-            // Based on Event model, tags was array. Let's assume tags here is similar.
-            // Checking groupController/model if possible would be best but let's try standard split.
             const payload = {
-                title: formData.name, // Assuming 'title' or 'name'. Group model usually has name. Let's start with name.
-                name: formData.name,
-                description: formData.description,
-                tags: formData.tags.split(',').map(tag => tag.trim())
+                name,
+                description,
+                tags
             };
 
             const res = await axios.post('/api/groups', payload);
             setGroups([...groups, res.data]);
             setOpen(false);
             setFormData({ name: '', description: '', tags: '' });
+            setError('');
+        } catch (err) {
+            setError(err.response?.data?.error || err.response?.data?.message || 'Unable to create group');
+        }
+    };
+
+    const handleLeaveGroup = async (groupId) => {
+        if (!window.confirm('Leave this group?')) return;
+
+        try {
+            await axios.delete(`/api/groups/${groupId}/leave`);
+            await fetchGroups();
         } catch (err) {
             console.error(err);
+            setError(err.response?.data?.error || 'Unable to leave group');
         }
     };
 
@@ -130,6 +177,11 @@ const Groups = () => {
                                 </Box>
                             </CardContent>
                             <CardActions sx={{ px: 2, pb: 2 }}>
+                                {group.members?.some((member) => String(member._id || member) === currentUserId) && (
+                                    <Button size="small" color="error" onClick={() => handleLeaveGroup(group._id)}>
+                                        Leave Group
+                                    </Button>
+                                )}
                                 <Button size="small" variant="contained" onClick={() => navigate(`/groups/${group._id}`)}>
                                     View Group
                                 </Button>
@@ -150,6 +202,9 @@ const Groups = () => {
             <Dialog open={open} onClose={() => setOpen(false)} fullWidth maxWidth="sm">
                 <DialogTitle>Create New Group</DialogTitle>
                 <DialogContent>
+                    {error && (
+                        <Box sx={{ mb: 2, color: 'error.main' }}>{error}</Box>
+                    )}
                     <form onSubmit={handleSubmit} id="create-group-form">
                         <TextField
                             autoFocus
@@ -160,6 +215,8 @@ const Groups = () => {
                             required
                             value={formData.name}
                             onChange={handleChange}
+                            error={Boolean(fieldErrors.name)}
+                            helperText={fieldErrors.name}
                         />
                         <TextField
                             margin="normal"
@@ -171,6 +228,8 @@ const Groups = () => {
                             required
                             value={formData.description}
                             onChange={handleChange}
+                            error={Boolean(fieldErrors.description)}
+                            helperText={fieldErrors.description}
                         />
                         <TextField
                             margin="normal"
@@ -179,7 +238,8 @@ const Groups = () => {
                             fullWidth
                             value={formData.tags}
                             onChange={handleChange}
-                            helperText="e.g. technology, alumni, batch-2023"
+                            error={Boolean(fieldErrors.tags)}
+                            helperText={fieldErrors.tags || 'e.g. technology, alumni, batch-2023'}
                         />
                     </form>
                 </DialogContent>

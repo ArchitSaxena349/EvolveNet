@@ -21,14 +21,17 @@ router.post(
   '/',
   [
     auth,
-    [
-      check('title', 'Title is required').not().isEmpty(),
-      check('description', 'Description is required').not().isEmpty(),
-      check('date', 'Date is required').not().isEmpty(),
-      check('location', 'Location is required').not().isEmpty(),
-      check('maxAttendees', 'Maximum attendees is required').isInt({ min: 1 }),
-      check('tags', 'Tags are required').not().isEmpty()
-    ]
+    check('title', 'Title is required').trim().notEmpty(),
+    check('title', 'Title must be between 2 and 120 characters').isLength({ min: 2, max: 120 }),
+    check('description', 'Description is required').trim().notEmpty(),
+    check('description', 'Description must be between 10 and 2000 characters').isLength({ min: 10, max: 2000 }),
+    check('date', 'Date is required').notEmpty(),
+    check('date', 'Date must be a valid ISO date').isISO8601(),
+    check('location', 'Location is required').trim().notEmpty(),
+    check('location', 'Location must be between 2 and 120 characters').isLength({ min: 2, max: 120 }),
+    check('maxAttendees', 'Maximum attendees is required').isInt({ min: 1, max: 10000 }),
+    check('tags', 'Tags are required').isArray({ min: 1 }),
+    check('tags.*', 'Each tag must be a non-empty string').trim().notEmpty()
   ],
   eventController.createEvent
 );
@@ -40,14 +43,17 @@ router.put(
   '/:id',
   [
     auth,
-    [
-      check('title', 'Title is required').not().isEmpty(),
-      check('description', 'Description is required').not().isEmpty(),
-      check('date', 'Date is required').not().isEmpty(),
-      check('location', 'Location is required').not().isEmpty(),
-      check('maxAttendees', 'Maximum attendees is required').isInt({ min: 1 }),
-      check('tags', 'Tags are required').not().isEmpty()
-    ]
+    check('title', 'Title is required').trim().notEmpty(),
+    check('title', 'Title must be between 2 and 120 characters').isLength({ min: 2, max: 120 }),
+    check('description', 'Description is required').trim().notEmpty(),
+    check('description', 'Description must be between 10 and 2000 characters').isLength({ min: 10, max: 2000 }),
+    check('date', 'Date is required').notEmpty(),
+    check('date', 'Date must be a valid ISO date').isISO8601(),
+    check('location', 'Location is required').trim().notEmpty(),
+    check('location', 'Location must be between 2 and 120 characters').isLength({ min: 2, max: 120 }),
+    check('maxAttendees', 'Maximum attendees is required').isInt({ min: 1, max: 10000 }),
+    check('tags', 'Tags are required').isArray({ min: 1 }),
+    check('tags.*', 'Each tag must be a non-empty string').trim().notEmpty()
   ],
   eventController.updateEvent
 );

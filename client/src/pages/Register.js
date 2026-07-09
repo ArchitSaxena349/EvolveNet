@@ -21,6 +21,7 @@ const Register = () => {
     confirmPassword: ''
   });
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const { register } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -29,21 +30,52 @@ const Register = () => {
       ...formData,
       [e.target.name]: e.target.value
     });
+    setFieldErrors((current) => ({
+      ...current,
+      [e.target.name]: undefined
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    const nextFieldErrors = {};
 
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+    if (!formData.name.trim()) {
+      nextFieldErrors.name = 'Name is required';
+    } else if (formData.name.trim().length < 2 || formData.name.trim().length > 50) {
+      nextFieldErrors.name = 'Name must be 2 to 50 characters';
+    }
+
+    if (!formData.email.trim()) {
+      nextFieldErrors.email = 'Email is required';
+    } else if (!/^\S+@\S+\.\S+$/.test(formData.email.trim())) {
+      nextFieldErrors.email = 'Enter a valid email address';
+    }
+
+    if (!formData.password) {
+      nextFieldErrors.password = 'Password is required';
+    } else if (formData.password.length < 6) {
+      nextFieldErrors.password = 'Password must be at least 6 characters';
+    }
+
+    if (!formData.confirmPassword) {
+      nextFieldErrors.confirmPassword = 'Please confirm your password';
+    } else if (formData.password !== formData.confirmPassword) {
+      nextFieldErrors.confirmPassword = 'Passwords do not match';
+    }
+
+    if (Object.keys(nextFieldErrors).length > 0) {
+      setFieldErrors(nextFieldErrors);
       return;
     }
 
+    setFieldErrors({});
+
     try {
       await register({
-        name: formData.name,
-        email: formData.email,
+        name: formData.name.trim(),
+        email: formData.email.trim(),
         password: formData.password
       });
       navigate('/profile');
@@ -93,6 +125,8 @@ const Register = () => {
               autoFocus
               value={formData.name}
               onChange={handleChange}
+              error={Boolean(fieldErrors.name)}
+              helperText={fieldErrors.name}
             />
             <TextField
               margin="normal"
@@ -104,6 +138,8 @@ const Register = () => {
               autoComplete="email"
               value={formData.email}
               onChange={handleChange}
+              error={Boolean(fieldErrors.email)}
+              helperText={fieldErrors.email}
             />
             <TextField
               margin="normal"
@@ -116,6 +152,8 @@ const Register = () => {
               autoComplete="new-password"
               value={formData.password}
               onChange={handleChange}
+              error={Boolean(fieldErrors.password)}
+              helperText={fieldErrors.password}
             />
             <TextField
               margin="normal"
@@ -128,6 +166,8 @@ const Register = () => {
               autoComplete="new-password"
               value={formData.confirmPassword}
               onChange={handleChange}
+              error={Boolean(fieldErrors.confirmPassword)}
+              helperText={fieldErrors.confirmPassword}
             />
             <Button
               type="submit"

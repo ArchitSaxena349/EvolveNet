@@ -8,8 +8,10 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
 import Login from './pages/Login';
+import ForgotPassword from './pages/ForgotPassword';
 import Register from './pages/Register';
 import Events from './pages/Events';
+import EventCreate from './pages/EventCreate';
 import Profile from './pages/Profile';
 import EventDetail from './pages/EventDetail';
 import Groups from './pages/Groups';
@@ -29,8 +31,14 @@ function App() {
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/events" element={<Events />} />
+                <Route path="/events/create" element={
+                  <ProtectedRoute>
+                    <EventCreate />
+                  </ProtectedRoute>
+                } />
                 <Route path="/events/:id" element={<EventDetail />} />
                 <Route path="/profile" element={
                   <ProtectedRoute>

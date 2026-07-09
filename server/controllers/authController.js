@@ -81,13 +81,13 @@ exports.login = async (req, res) => {
     // Check if user exists
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ error: 'User does not exist' });
     }
 
     // Check if password matches
     const isMatch = await user.matchPassword(password);
     if (!isMatch) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ error: 'Password is incorrect' });
     }
 
     // Generate token
@@ -146,35 +146,44 @@ exports.getMe = async (req, res) => {
 // @access  Public
 exports.forgotPassword = async (req, res) => {
   try {
-    const user = await User.findOne({ email: req.body.email });
-    if (!user) {
-      return res.status(404).json({ error: 'No user found with this email' });
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
 
-    // Get reset token
-    const resetToken = user.getResetPasswordToken();
+    const user = await User.findOne({ email: req.body.email });
+    if (!user) {
+      return res.status(404).json({ error: 'User does not exist' });
+    }
 
+    const otp = crypto.randomInt(100000, 1000000).toString();
+    user.resetPasswordToken = crypto.createHash('sha256').update(otp).digest('hex');
+    user.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
+    user.resetPasswordAttempts = 0;
     await user.save({ validateBeforeSave: false });
-
-    // Create reset URL
-    const resetUrl = `${req.protocol}://${req.get('host')}/api/auth/resetpassword/${resetToken}`;
-
-    // Create email message
-    const message = `You are receiving this email because you (or someone else) has requested the reset of a password. Please make a PUT request to: \n\n ${resetUrl}`;
 
     try {
       await transporter.sendMail({
         to: user.email,
         from: process.env.EMAIL_FROM,
-        subject: 'Password reset token',
-        text: message
+        subject: 'Your EvolveNet password reset code',
+        text: `Your EvolveNet password reset code is ${otp}. It expires in 10 minutes.`,
+        html: `
+          <div style="font-family:Arial,sans-serif;line-height:1.6">
+            <h2>Reset your EvolveNet password</h2>
+            <p>Enter this verification code to reset your password:</p>
+            <p style="font-size:32px;font-weight:700;letter-spacing:8px">${otp}</p>
+            <p>This code expires in 10 minutes. If you did not request it, ignore this email.</p>
+          </div>
+        `
       });
 
-      res.status(200).json({ success: true, data: 'Email sent' });
+      return res.status(200).json({ success: true, message: 'OTP sent to your registered email' });
     } catch (err) {
       console.error(err);
       user.resetPasswordToken = undefined;
       user.resetPasswordExpire = undefined;
+      user.resetPasswordAttempts = 0;
       await user.save({ validateBeforeSave: false });
       return res.status(500).json({ error: 'Email could not be sent' });
     }

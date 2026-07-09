@@ -31,6 +31,8 @@ const UserSchema = new mongoose.Schema({
     default: 'user'
   },
   profile: {
+    picture: String,
+    coverPhoto: String,
     bio: String,
     location: String,
     website: String,
@@ -56,6 +58,10 @@ const UserSchema = new mongoose.Schema({
   },
   resetPasswordToken: String,
   resetPasswordExpire: Date,
+  resetPasswordAttempts: {
+    type: Number,
+    default: 0
+  },
   createdAt: {
     type: Date,
     default: Date.now
@@ -106,4 +112,4 @@ UserSchema.methods.getResetPasswordToken = function() {
   return resetToken;
 };
 
-module.exports = mongoose.model('User', UserSchema); 
+module.exports = mongoose.model('User', UserSchema);

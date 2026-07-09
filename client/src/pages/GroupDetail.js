@@ -18,6 +18,7 @@ import {
     ArrowBack as ArrowBackIcon,
     People as PeopleIcon,
     Groups as GroupsIcon,
+    DeleteForever as DeleteForeverIcon,
 } from '@mui/icons-material';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -46,7 +47,9 @@ const GroupDetail = () => {
         }
     };
 
-    const isMember = group?.members?.some(member => member._id === user?._id);
+    const currentUserId = String(user?.id || user?._id || '');
+    const isMember = group?.members?.some(member => String(member._id || member) === currentUserId);
+    const isCreator = String(group?.creator?._id || group?.creator) === currentUserId;
 
     const handleJoin = async () => {
         try {
@@ -56,6 +59,17 @@ const GroupDetail = () => {
                 await axios.post(`/api/groups/${id}/join`);
             }
             fetchGroup();
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const handleDeleteGroup = async () => {
+        if (!window.confirm('Delete this group permanently?')) return;
+
+        try {
+            await axios.delete(`/api/groups/${id}`);
+            navigate('/groups');
         } catch (err) {
             console.error(err);
         }
@@ -123,7 +137,7 @@ const GroupDetail = () => {
                                 {group.description}
                             </Typography>
 
-                            <Box sx={{ mt: 3 }}>
+                            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mt: 3 }}>
                                 <Button
                                     variant={isMember ? "outlined" : "contained"}
                                     color={isMember ? "error" : "primary"}
@@ -132,7 +146,18 @@ const GroupDetail = () => {
                                 >
                                     {isMember ? 'Leave Group' : 'Join Group'}
                                 </Button>
-                            </Box>
+                                {isCreator && (
+                                    <Button
+                                        variant="outlined"
+                                        color="error"
+                                        size="large"
+                                        startIcon={<DeleteForeverIcon />}
+                                        onClick={handleDeleteGroup}
+                                    >
+                                        Delete Group
+                                    </Button>
+                                )}
+                            </Stack>
                         </CardContent>
                     </Card>
                 </Grid>

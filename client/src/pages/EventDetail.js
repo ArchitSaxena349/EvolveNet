@@ -20,6 +20,7 @@ import {
   People as PeopleIcon,
   ArrowBack as ArrowBackIcon,
   CheckCircle as CheckCircleIcon,
+  DeleteForever as DeleteForeverIcon,
 } from '@mui/icons-material';
 import axios from 'axios';
 import { AuthContext } from '../context/AuthContext';
@@ -67,6 +68,7 @@ const EventDetail = () => {
   // we append the bare user id, so normalise both sides before comparing.
   const attendeeId = (a) => String(a?._id || a);
   const isRegistered = event.attendees?.some(a => attendeeId(a) === String(user?.id));
+  const isOrganizer = String(event.organizer?._id || event.organizer) === String(user?.id);
 
   const handleRegister = async () => {
     if (!user) return navigate('/login');
@@ -89,6 +91,19 @@ const EventDetail = () => {
     } catch (err) {
       console.error('Unregister error:', err);
       setSnack({ open: true, message: err.response?.data?.error || 'Unregister failed', severity: 'error' });
+    }
+  };
+
+  const handleDeleteEvent = async () => {
+    if (!window.confirm('Delete this event permanently?')) return;
+
+    try {
+      await axios.delete(`/api/events/${event._id}`);
+      setSnack({ open: true, message: 'Event deleted successfully', severity: 'success' });
+      navigate('/events');
+    } catch (err) {
+      console.error('Delete event error:', err);
+      setSnack({ open: true, message: err.response?.data?.error || 'Delete failed', severity: 'error' });
     }
   };
 
@@ -149,11 +164,24 @@ const EventDetail = () => {
 
           <Box>
             {user ? (
-              isRegistered ? (
-                <Button variant="outlined" color="error" size="large" onClick={handleUnregister}>Unregister</Button>
-              ) : (
-                <Button variant="contained" color="primary" size="large" onClick={handleRegister}>Register</Button>
-              )
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                {isRegistered ? (
+                  <Button variant="outlined" color="error" size="large" onClick={handleUnregister}>Unregister</Button>
+                ) : (
+                  <Button variant="contained" color="primary" size="large" onClick={handleRegister}>Register</Button>
+                )}
+                {isOrganizer && (
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    size="large"
+                    startIcon={<DeleteForeverIcon />}
+                    onClick={handleDeleteEvent}
+                  >
+                    Delete Event
+                  </Button>
+                )}
+              </Stack>
             ) : (
               <Button variant="contained" color="primary" size="large" onClick={() => navigate('/login')}>Login to Register</Button>
             )}
