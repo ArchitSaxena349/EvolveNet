@@ -74,7 +74,8 @@ const Connections = () => {
         try {
             const res = await axios.get('/api/users');
             // Filter out self
-            setAllUsers(res.data.filter(u => u._id !== user._id));
+            const currentUserId = user?.id || user?._id;
+            setAllUsers(res.data.filter((u) => u._id !== currentUserId));
         } catch (err) {
             console.error(err);
         }
@@ -174,7 +175,8 @@ const Connections = () => {
             {tabValue === 0 && (
                 <Grid container spacing={3}>
                     {connections.map((conn) => {
-                        const otherUser = conn.user?._id === user._id ? conn.connectedUser : conn.user;
+                        const currentUserId = user?.id || user?._id;
+                        const otherUser = conn.user?._id === currentUserId ? conn.connectedUser : conn.user;
                         if (!otherUser) return null;
                         return (
                             <Grid item xs={12} sm={6} md={4} key={conn._id}>

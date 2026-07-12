@@ -14,8 +14,8 @@ const getConnections = async (req, res) => {
       ],
       status: 'accepted'
     })
-      .populate('user', 'name email')
-      .populate('connectedUser', 'name email')
+      .populate('user', 'name email profile')
+      .populate('connectedUser', 'name email profile')
       .sort({ createdAt: -1 });
 
     res.json(connections);
@@ -186,4 +186,4 @@ module.exports = {
   acceptConnectionRequest,
   rejectConnectionRequest,
   removeConnection
-}; 
+};

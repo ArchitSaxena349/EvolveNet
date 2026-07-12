@@ -88,6 +88,7 @@ const Profile = () => {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
+  const [connections, setConnections] = useState([]);
   const [editing, setEditing] = useState(false);
   const [tabValue, setTabValue] = useState(0);
   const [profileErrors, setProfileErrors] = useState({});
@@ -130,9 +131,14 @@ const Profile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        // Use auth/me which returns the current user's info
-        const res = await axios.get('/api/auth/me');
+        // The profile and accepted connections are stored behind separate APIs.
+        const [profileRes, connectionsRes] = await Promise.all([
+          axios.get('/api/auth/me'),
+          axios.get('/api/connections')
+        ]);
+        const res = profileRes;
         setProfile(res.data);
+        setConnections(connectionsRes.data);
         setFormData({
           name: res.data.name,
           bio: res.data.profile?.bio || '',
@@ -153,6 +159,18 @@ const Profile = () => {
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
+  };
+
+  const handleRemoveConnection = async (connectionId) => {
+    if (!window.confirm('Are you sure you want to remove this connection?')) return;
+
+    try {
+      await axios.delete(`/api/connections/${connectionId}`);
+      setConnections((current) => current.filter((connection) => connection._id !== connectionId));
+    } catch (err) {
+      console.error('Error removing connection:', err);
+      window.alert(err.response?.data?.error || 'Unable to remove this connection.');
+    }
   };
 
   const handleChange = (e) => {
@@ -445,7 +463,13 @@ const Profile = () => {
   const experience = profile.profile?.experience || [];
   const education = profile.profile?.education || [];
   const skills = profile.profile?.skills || [];
-  const connections = profile.connections || [];
+  const currentUserId = profile?.id || profile?._id || user?.id || user?._id;
+  const connectionUsers = connections
+    .map((connection) => ({
+      connectionId: connection._id,
+      user: connection.user?._id === currentUserId ? connection.connectedUser : connection.user
+    }))
+    .filter(({ user: connectionUser }) => connectionUser);
   const initial = (profile.name || 'U').trim().charAt(0).toUpperCase();
 
   const formatDate = (d) => (d ? new Date(d).toLocaleDateString(undefined, { month: 'short', year: 'numeric' }) : '');
@@ -794,14 +818,14 @@ const Profile = () => {
               {tabValue === 3 && (
                 <Box>
                   <Typography variant="h6" gutterBottom>
-                    {connections.length} Connections
+                    {connectionUsers.length} Connections
                   </Typography>
-                  {connections.length === 0 ? (
+                  {connectionUsers.length === 0 ? (
                     <EmptyState icon={<PeopleIcon />} text="No connections yet." />
                   ) : (
                     <Grid container spacing={2}>
-                      {connections.map((connection) => (
-                        <Grid item xs={12} sm={6} md={4} key={connection._id}>
+                      {connectionUsers.map(({ connectionId, user: connection }) => (
+                        <Grid item xs={12} sm={6} md={4} key={connectionId}>
                           <Paper variant="outlined" sx={{ p: 2, borderRadius: 3 }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                               <Avatar
@@ -819,6 +843,15 @@ const Profile = () => {
                                 </Typography>
                               </Box>
                             </Box>
+                            <Button
+                              size="small"
+                              color="error"
+                              startIcon={<DeleteIcon />}
+                              onClick={() => handleRemoveConnection(connectionId)}
+                              sx={{ mt: 1.5 }}
+                            >
+                              Remove connection
+                            </Button>
                           </Paper>
                         </Grid>
                       ))}
