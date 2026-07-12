@@ -9,8 +9,10 @@ import {
   Alert,
   Paper,
   Link,
+  IconButton,
+  InputAdornment,
 } from '@mui/material';
-import { Hub as HubIcon } from '@mui/icons-material';
+import { Hub as HubIcon, Visibility, VisibilityOff } from '@mui/icons-material';
 import { AuthContext } from '../context/AuthContext';
 
 const Register = () => {
@@ -22,6 +24,7 @@ const Register = () => {
   });
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
+  const [showPasswords, setShowPasswords] = useState(false);
   const { register } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -147,13 +150,26 @@ const Register = () => {
               fullWidth
               name="password"
               label="Password"
-              type="password"
+              type={showPasswords ? 'text' : 'password'}
               id="password"
               autoComplete="new-password"
               value={formData.password}
               onChange={handleChange}
               error={Boolean(fieldErrors.password)}
               helperText={fieldErrors.password}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label={showPasswords ? 'Hide passwords' : 'Show passwords'}
+                      onClick={() => setShowPasswords((current) => !current)}
+                      edge="end"
+                    >
+                      {showPasswords ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
             />
             <TextField
               margin="normal"
@@ -161,13 +177,26 @@ const Register = () => {
               fullWidth
               name="confirmPassword"
               label="Confirm Password"
-              type="password"
+              type={showPasswords ? 'text' : 'password'}
               id="confirmPassword"
               autoComplete="new-password"
               value={formData.confirmPassword}
               onChange={handleChange}
               error={Boolean(fieldErrors.confirmPassword)}
               helperText={fieldErrors.confirmPassword}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label={showPasswords ? 'Hide passwords' : 'Show passwords'}
+                      onClick={() => setShowPasswords((current) => !current)}
+                      edge="end"
+                    >
+                      {showPasswords ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
             />
             <Button
               type="submit"

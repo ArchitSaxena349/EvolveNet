@@ -117,6 +117,7 @@ Create a `.env` file in the root directory with the following variables:
 
 ```env
 MONGODB_URI=your_mongodb_connection_string
+MONGODB_DB_NAME=evolvenet
 JWT_SECRET=your_jwt_secret
 JWT_EXPIRE=1h
 JWT_REFRESH_EXPIRE=7d

@@ -117,6 +117,9 @@ const connectDB = async () => {
   try {
     console.log('Attempting to connect to MongoDB...');
     const conn = await mongoose.connect(process.env.MONGODB_URI, {
+      // A cluster can host several applications. Set a database name explicitly
+      // so this app never falls back to the shared/default database.
+      dbName: process.env.MONGODB_DB_NAME || 'evolvenet',
       useNewUrlParser: true,
       useUnifiedTopology: true,
       serverSelectionTimeoutMS: 10000,

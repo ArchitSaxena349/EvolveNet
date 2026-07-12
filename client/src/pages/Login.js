@@ -9,8 +9,10 @@ import {
   Alert,
   Paper,
   Link,
+  IconButton,
+  InputAdornment,
 } from '@mui/material';
-import { Hub as HubIcon } from '@mui/icons-material';
+import { Hub as HubIcon, Visibility, VisibilityOff } from '@mui/icons-material';
 import { AuthContext } from '../context/AuthContext';
 
 const Login = () => {
@@ -20,6 +22,7 @@ const Login = () => {
   });
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -115,13 +118,26 @@ const Login = () => {
               fullWidth
               name="password"
               label="Password"
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               id="password"
               autoComplete="current-password"
               value={formData.password}
               onChange={handleChange}
               error={Boolean(fieldErrors.password)}
               helperText={fieldErrors.password}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      onClick={() => setShowPassword((current) => !current)}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
             />
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}>
               <Link component={RouterLink} to="/forgot-password" variant="body2" fontWeight={600}>
