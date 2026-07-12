@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box, Typography, Container, Stack, Link, Divider } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
-import { Hub as HubIcon } from '@mui/icons-material';
 
 const Footer = () => {
   return (
@@ -22,24 +21,12 @@ const Footer = () => {
           alignItems={{ xs: 'flex-start', sm: 'center' }}
           spacing={2}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Box
-              sx={{
-                width: 32,
-                height: 32,
-                borderRadius: 2,
-                display: 'grid',
-                placeItems: 'center',
-                color: 'common.white',
-                backgroundImage: 'linear-gradient(135deg, #4f46e5, #06b6d4)',
-              }}
-            >
-              <HubIcon fontSize="small" />
-            </Box>
-            <Typography variant="h6" sx={{ fontWeight: 800 }}>
-              EvolveNet
-            </Typography>
-          </Box>
+          <Box
+            component="img"
+            src="/assets/logo.png"
+            alt="EvolveNet"
+            sx={{ width: 160, height: 60, objectFit: 'contain' }}
+          />
 
           <Stack direction="row" spacing={3}>
             <Link component={RouterLink} to="/events" color="text.secondary" underline="hover">

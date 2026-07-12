@@ -16,7 +16,6 @@ import {
   Tooltip,
 } from '@mui/material';
 import {
-  Hub as HubIcon,
   Logout as LogoutIcon,
   Person as PersonIcon,
 } from '@mui/icons-material';
@@ -72,20 +71,11 @@ const Navbar = () => {
             }}
           >
             <Box
-              sx={{
-                width: 36,
-                height: 36,
-                borderRadius: 2,
-                display: 'grid',
-                placeItems: 'center',
-                backgroundColor: 'rgba(255,255,255,0.18)',
-              }}
-            >
-              <HubIcon fontSize="small" />
-            </Box>
-            <Typography variant="h6" sx={{ fontWeight: 800, letterSpacing: '-0.02em' }}>
-              EvolveNet
-            </Typography>
+              component="img"
+              src="/assets/logo-black.png"
+              alt="EvolveNet"
+              sx={{ width: 150, height: 52, objectFit: 'contain' }}
+            />
           </Box>
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
