@@ -576,8 +576,8 @@ const Profile = () => {
                     )}
                   </Stack>
                 )}
-                <Box sx={{ flexGrow: 1, pb: 0.5 }}>
-                  <Typography variant="h4" component="h1">
+                <Box sx={{ flexGrow: 1, minWidth: 0, pb: 0.5 }}>
+                  <Typography variant="h4" component="h1" sx={{ overflowWrap: 'anywhere' }}>
                     {profile.name}
                   </Typography>
                   <Stack
@@ -585,11 +585,11 @@ const Profile = () => {
                     spacing={2}
                     sx={{ mt: 0.5, color: 'text.secondary', flexWrap: 'wrap' }}
                   >
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, minWidth: 0 }}>
                       <EmailIcon fontSize="small" />
-                      <Typography variant="body2">{profile.email}</Typography>
+                      <Typography variant="body2" sx={{ overflowWrap: 'anywhere' }}>{profile.email}</Typography>
                     </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, minWidth: 0 }}>
                       <LocationIcon fontSize="small" />
                       <Typography variant="body2">
                         {profile.profile?.location || 'Location not specified'}
@@ -661,7 +661,12 @@ const Profile = () => {
                   <Typography color={profile.profile?.bio ? 'text.primary' : 'text.secondary'}>
                     {profile.profile?.bio || 'No bio available yet. Click “Edit Profile” to add one.'}
                   </Typography>
-                  <Stack direction="row" spacing={1.5} sx={{ mt: 2.5 }}>
+                  <Stack
+                    direction="row"
+                    spacing={1.5}
+                    useFlexGap
+                    sx={{ mt: 2.5, flexWrap: 'wrap' }}
+                  >
                     <Chip icon={<WorkIcon />} label={`${experience.length} Experience`} variant="outlined" />
                     <Chip icon={<SkillsIcon />} label={`${skills.length} Skills`} variant="outlined" />
                     <Chip icon={<PeopleIcon />} label={`${connections.length} Connections`} variant="outlined" />
@@ -705,11 +710,11 @@ const Profile = () => {
                     <Stack spacing={2}>
                       {experience.map((exp) => (
                         <Paper key={exp._id} variant="outlined" sx={{ p: 2.5, borderRadius: 3 }}>
-                          <Box sx={{ display: 'flex', gap: 2 }}>
+                          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
                             <Avatar sx={{ bgcolor: 'rgba(79,70,229,0.1)', color: 'primary.main' }}>
                               <WorkIcon />
                             </Avatar>
-                            <Box sx={{ flexGrow: 1 }}>
+                            <Box sx={{ flexGrow: 1, minWidth: 0 }}>
                               <Typography variant="h6">{exp.title}</Typography>
                               <Typography color="text.secondary">
                                 {exp.company}
@@ -727,6 +732,7 @@ const Profile = () => {
                               size="small"
                               startIcon={<DeleteIcon />}
                               onClick={() => handleDeleteExperience(exp._id)}
+                              sx={{ alignSelf: { xs: 'flex-start', sm: 'center' } }}
                             >
                               Delete
                             </Button>
@@ -754,11 +760,11 @@ const Profile = () => {
                     <Stack spacing={2}>
                       {education.map((edu) => (
                         <Paper key={edu._id} variant="outlined" sx={{ p: 2.5, borderRadius: 3 }}>
-                          <Box sx={{ display: 'flex', gap: 2 }}>
+                          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
                             <Avatar sx={{ bgcolor: 'rgba(6,182,212,0.12)', color: 'secondary.dark' }}>
                               <SchoolIcon />
                             </Avatar>
-                            <Box sx={{ flexGrow: 1 }}>
+                            <Box sx={{ flexGrow: 1, minWidth: 0 }}>
                               <Typography variant="h6">{edu.school}</Typography>
                               <Typography color="text.secondary">
                                 {edu.degree}
@@ -776,6 +782,7 @@ const Profile = () => {
                               size="small"
                               startIcon={<DeleteIcon />}
                               onClick={() => handleDeleteEducation(edu._id)}
+                              sx={{ alignSelf: { xs: 'flex-start', sm: 'center' } }}
                             >
                               Delete
                             </Button>
