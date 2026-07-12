@@ -19,6 +19,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useAuth } from '../context/AuthContext';
 
 const features = [
   {
@@ -40,6 +41,7 @@ const features = [
 
 const Home = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [events, setEvents] = React.useState([]);
 
   React.useEffect(() => {
@@ -102,28 +104,57 @@ const Home = () => {
               relationships that move your career forward — all in one place.
             </Typography>
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-              <Button
-                variant="contained"
-                color="secondary"
-                size="large"
-                endIcon={<ArrowForwardIcon />}
-                onClick={() => navigate('/register')}
-                sx={{ fontWeight: 700 }}
-              >
-                Get Started Free
-              </Button>
-              <Button
-                variant="outlined"
-                size="large"
-                onClick={() => navigate('/login')}
-                sx={{
-                  color: 'common.white',
-                  borderColor: 'rgba(255,255,255,0.6)',
-                  '&:hover': { borderColor: 'common.white', bgcolor: 'rgba(255,255,255,0.08)' },
-                }}
-              >
-                Sign In
-              </Button>
+              {user ? (
+                <>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    size="large"
+                    endIcon={<ArrowForwardIcon />}
+                    onClick={() => navigate('/profile')}
+                    sx={{ fontWeight: 700 }}
+                  >
+                    View Profile
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    size="large"
+                    onClick={() => navigate('/connections')}
+                    sx={{
+                      color: 'common.white',
+                      borderColor: 'rgba(255,255,255,0.6)',
+                      '&:hover': { borderColor: 'common.white', bgcolor: 'rgba(255,255,255,0.08)' },
+                    }}
+                  >
+                    Explore Network
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    size="large"
+                    endIcon={<ArrowForwardIcon />}
+                    onClick={() => navigate('/register')}
+                    sx={{ fontWeight: 700 }}
+                  >
+                    Get Started Free
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    size="large"
+                    onClick={() => navigate('/login')}
+                    sx={{
+                      color: 'common.white',
+                      borderColor: 'rgba(255,255,255,0.6)',
+                      '&:hover': { borderColor: 'common.white', bgcolor: 'rgba(255,255,255,0.08)' },
+                    }}
+                  >
+                    Sign In
+                  </Button>
+                </>
+              )}
             </Stack>
           </Box>
         </Container>
